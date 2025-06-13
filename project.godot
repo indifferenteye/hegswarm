@@ -14,3 +14,11 @@ config/name="Hegswam"
 run/main_scene="uid://bey6hgn2q5xdd"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[input]
+camera_move_up={"deadzone":0.5,"events":[{"type":"key","keycode":87}]}
+camera_move_down={"deadzone":0.5,"events":[{"type":"key","keycode":83}]}
+camera_move_left={"deadzone":0.5,"events":[{"type":"key","keycode":65}]}
+camera_move_right={"deadzone":0.5,"events":[{"type":"key","keycode":68}]}
+camera_zoom_in={"deadzone":0.5,"events":[{"type":"key","keycode":81}]}
+camera_zoom_out={"deadzone":0.5,"events":[{"type":"key","keycode":69}]}
