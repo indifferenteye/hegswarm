@@ -10,8 +10,9 @@
 [node name="script" type="Node2D" parent="WorldGeneration"]
 script = ExtResource("2_mlxib")
 scene_to_instance = ExtResource("1_jxn3g")
-radius = 100.0
-star_count = 200
+star_count = 895
+radius = 150.28
+arm_spread = 0.625
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2.48, 2.48)

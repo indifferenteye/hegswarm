@@ -16,18 +16,18 @@ extends Node2D
 @export var random_offset: float = 10.0
 
 func _ready():
-        generate_spiral_galaxy()
+		generate_spiral_galaxy()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to
 ## tweak the resulting shape.
 func generate_spiral_galaxy() -> void:
-        randomize()
-        for i in range(star_count):
-                var instance = scene_to_instance.instantiate()
-                var t := float(i) / star_count
-                var arm := randi() % arm_count
-                var r := t * radius + randf_range(-random_offset, random_offset)
-                var angle := t * twist + TAU * arm / arm_count
-                angle += randf_range(-arm_spread, arm_spread)
-                instance.position = Vector2(cos(angle), sin(angle)) * r
-                add_child(instance)
+		randomize()
+		for i in range(star_count):
+				var instance = scene_to_instance.instantiate()
+				var t := float(i) / star_count
+				var arm := randi() % arm_count
+				var r := t * radius + randf_range(-random_offset, random_offset)
+				var angle := t * twist + TAU * arm / arm_count
+				angle += randf_range(-arm_spread, arm_spread)
+				instance.position = Vector2(cos(angle), sin(angle)) * r
+				add_child(instance)
