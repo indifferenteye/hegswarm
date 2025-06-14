@@ -20,6 +20,4 @@ offset = Vector2(-2.98023e-08, 0)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 scale = Vector2(0.221707, 0.184127)
 shape = SubResource("CircleShape2D_3t53c")
-
-[connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
