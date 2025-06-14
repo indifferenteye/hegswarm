@@ -1,4 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://b4rey3dsg2s6k"]
+[gd_scene load_steps=3 format=3 uid="uid://b4rey3dsg2s6k"]
+
+[ext_resource type="PackedScene" uid="uid://ds735w7luhcc7" path="res://assets/drone.tscn" id="1_6lfpa"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_e1m50"]
 
@@ -9,3 +11,6 @@ position = Vector2(2.38419e-07, 2.38419e-07)
 scale = Vector2(95.0612, -96.0268)
 texture = SubResource("CanvasTexture_e1m50")
 offset = Vector2(-2.98023e-08, 0)
+
+[node name="Planet" parent="." instance=ExtResource("1_6lfpa")]
+position = Vector2(-311, 150)

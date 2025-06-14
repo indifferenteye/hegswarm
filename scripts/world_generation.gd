@@ -23,9 +23,9 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: GalaxyGenerator = GalaxyGenerator.new()
 
 func _ready() -> void:
-rng.seed = seed
-_generate_galaxy()
-_highlight_last_visited()
+	rng.seed = seed
+	_generate_galaxy()
+	_highlight_last_visited()
 	if Globals.first_load:
 		Globals.first_load = false
 		_open_random_star_system()
