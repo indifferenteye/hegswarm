@@ -4,9 +4,11 @@ extends Node2D
 @export var seed: int = 0
 
 ## Called when the node is ready. Sets up input handling so the star can be
-## clicked by the player.
+## clicked by the player. The ``input_pickable`` property needs to be set on
+## this ``Node2D`` rather than the ``Sprite2D`` child in order for ``_input_event``
+## to be triggered.
 func _on_ready() -> void:
-	$Sprite2D.input_pickable = true
+    input_pickable = true
 
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.
