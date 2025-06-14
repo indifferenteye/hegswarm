@@ -22,7 +22,7 @@ func _ready() -> void:
 
 func _generate_planets(sun: Node2D) -> void:
 	var count := rng.randi_range(min_planets, max_planets)
-		for i in range(count):
+	for i in range(count):
 		var planet: Node2D = planet_scene.instantiate()
 		add_child(planet)
 		var radius := orbit_step * (i + 1) + rng.randf_range(-orbit_step * 0.25, orbit_step * 0.25)
