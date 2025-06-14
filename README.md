@@ -14,3 +14,4 @@ The project is in its early stages, so feel free to experiment with the world ge
 ## Development Notes
 
 This repository targets **Godot version 4**. Contributors should use GDScript 2.0 syntax and ensure that any scenes or scripts remain compatible with Godot 4's features.
+Use tabs to indent and make sure to use the correct number of tabs.
