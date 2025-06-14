@@ -46,10 +46,10 @@ func _spawn_drone() -> void:
 	if drone_scene == null or planets.is_empty():
 		return
 	drone = drone_scene.instantiate()
-		add_child(drone)
-		var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
-		drone.position = planet.position + Vector2(20, 0)
-		drone_target = drone.position
+	add_child(drone)
+	var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
+	drone.position = planet.position + Vector2(20, 0)
+	drone_target = drone.position
 
 func _process(delta: float) -> void:
 	if drone:
