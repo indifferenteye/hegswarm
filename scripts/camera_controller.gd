@@ -26,12 +26,12 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		var zoom_change := 0.0
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			zoom_change += zoom_speed 
+			zoom_change += zoom_speed
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			zoom_change -= zoom_speed 
+			zoom_change -= zoom_speed
 		if zoom_change != 0.0:
 			_update_zoom(zoom_change)
 
 func _update_zoom(delta_z: float) -> void:
-	var new_zoom:float = clamp(zoom.x + delta_z, max_zoom_in, max_zoom_out)
+	var new_zoom: float = clamp(zoom.x + delta_z, max_zoom_in, max_zoom_out)
 	zoom = Vector2(new_zoom, new_zoom)
