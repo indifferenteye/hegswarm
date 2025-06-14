@@ -6,6 +6,6 @@
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(2.38419e-07, 2.38419e-07)
-scale = Vector2(16.0589, -15.7955)
+scale = Vector2(95.0612, -96.0268)
 texture = SubResource("CanvasTexture_e1m50")
 offset = Vector2(-2.98023e-08, 0)

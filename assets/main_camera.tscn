@@ -5,6 +5,7 @@
 [node name="MainCamera" type="Camera2D"]
 zoom = Vector2(2.48, 2.48)
 script = ExtResource("1_aftc5")
-zoom_speed = 0.23
-max_zoom_in = 0.085
+move_speed = 400.0
+zoom_speed = 0.15
+max_zoom_in = 0.1
 max_zoom_out = 22.335

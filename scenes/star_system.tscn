@@ -7,5 +7,6 @@
 script = ExtResource("2")
 min_planets = 0
 max_planets = 8
+orbit_step = 140.0
 
 [node name="MainCamera" parent="." instance=ExtResource("2_be1mv")]

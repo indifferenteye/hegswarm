@@ -11,8 +11,9 @@
 [node name="script" type="Node2D" parent="WorldGeneration"]
 script = ExtResource("2_mlxib")
 scene_to_instance = ExtResource("1_jxn3g")
-star_count = 895
-radius = 150.28
-arm_spread = 0.625
+star_count = 420
+radius = 600.0
+twist = 6.0
+arm_spread = 0.9
 
 [node name="MainCamera" parent="." instance=ExtResource("3_mlxib")]

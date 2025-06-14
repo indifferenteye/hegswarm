@@ -3,6 +3,7 @@
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
 [node name="Planet" type="Node2D"]
+scale = Vector2(8, 7.88)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(2, -2)
