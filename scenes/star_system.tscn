@@ -10,3 +10,9 @@ max_planets = 8
 orbit_step = 140.0
 
 [node name="MainCamera" parent="." instance=ExtResource("2_be1mv")]
+
+[node name="BackButton" type="Button" parent="."]
+text = "Back"
+position = Vector2(10.0, 10.0)
+
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
