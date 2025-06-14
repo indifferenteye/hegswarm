@@ -15,6 +15,10 @@ run/main_scene="uid://bey6hgn2q5xdd"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Globals="*res://scripts/globals.gd"
+
 [input]
 
 camera_move_up={
@@ -66,5 +70,6 @@ camera_zoom_out={
 ]
 }
 
-[autoload]
-Globals="*res://scripts/globals.gd"
+[rendering]
+
+environment/defaults/default_clear_color=Color(0, 0, 0.0588235, 1)
