@@ -1,3 +1,8 @@
 [gd_scene format=3 uid="uid://g1us8g0k07it"]
 
+[ext_resource type="PackedScene" uid="uid://b4rey3dsg2s6k" path="res://assets/sun.tscn" id="1"]
+[ext_resource type="Script" uid="uid://zqu1h6go4tqf9" path="res://scripts/star_system.gd" id="2"]
+
 [node name="StarSystem" type="Node2D"]
+script = ExtResource("2")
+sun_scene = ExtResource("1")
