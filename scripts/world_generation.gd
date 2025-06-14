@@ -20,19 +20,31 @@ extends Node2D
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _ready() -> void:
-	rng.seed = seed
-	generate_spiral_galaxy()
+        rng.seed = seed
+        generate_spiral_galaxy()
+        if Globals.first_load:
+                Globals.first_load = false
+                _open_random_star_system()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
 func generate_spiral_galaxy() -> void:
-	for i in range(star_count):
-		var instance: Node2D = scene_to_instance.instantiate()
-		var t: float = float(i) / star_count
-		var arm := rng.randi() % arm_count
+        for i in range(star_count):
+                var instance: Node2D = scene_to_instance.instantiate()
+                var t: float = float(i) / star_count
+                var arm := rng.randi() % arm_count
 		var r := t * radius + rng.randf_range(-random_offset, random_offset)
 		var angle := t * twist + TAU * arm / arm_count
 		angle += rng.randf_range(-arm_spread, arm_spread)
-		instance.position = Vector2(cos(angle), sin(angle)) * r
-		instance.seed = rng.randi()
-		add_child(instance)
+                instance.position = Vector2(cos(angle), sin(angle)) * r
+                instance.seed = rng.randi()
+                add_child(instance)
+
+func _open_random_star_system() -> void:
+        var stars := get_children()
+        if stars.size() == 0:
+                return
+        var star_index := rng.randi_range(0, stars.size() - 1)
+        var star := stars[star_index]
+        Globals.star_seed = star.seed
+        get_tree().change_scene_to_file("res://scenes/star_system.tscn")
