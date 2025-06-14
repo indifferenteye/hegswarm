@@ -7,6 +7,7 @@ extends Node2D
 ## scene changes to the star system view.
 func _on_sprite_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		Globals.star_seed = seed
 		get_tree().change_scene_to_file("res://scenes/star_system.tscn")
 
 
