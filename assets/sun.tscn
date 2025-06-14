@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4rey3dsg2s6k"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_e1m50"]
+
+[node name="Sun" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2.38419e-07, 2.38419e-07)
+scale = Vector2(16.0589, -15.7955)
+texture = SubResource("CanvasTexture_e1m50")
+offset = Vector2(-2.98023e-08, 0)
