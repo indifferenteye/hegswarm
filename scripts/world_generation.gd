@@ -30,6 +30,7 @@ func _ready() -> void:
     _generate_galaxy()
     _highlight_last_visited()
     _spawn_drone()
+    _center_camera_on_last_visited()
     if Globals.first_load:
         Globals.first_load = false
         _open_random_star_system()
@@ -72,6 +73,22 @@ func _spawn_drone() -> void:
                        add_child(drone)
                        drone.position = star.position + Vector2(20, 0)
                        break
+
+func _center_camera_on_last_visited() -> void:
+    var current_scene := get_tree().get_current_scene()
+    if current_scene == null:
+        return
+    var camera := current_scene.get_node_or_null("MainCamera")
+    if camera == null:
+        return
+    for star in get_children():
+        if "seed" in star and star.seed == Globals.star_seed:
+            camera.position = star.global_position
+            if camera.has_variable("max_zoom_in"):
+                camera.zoom = Vector2(camera.max_zoom_in, camera.max_zoom_in)
+            else:
+                camera.zoom = Vector2(0.5, 0.5)
+            break
 
 func _open_random_star_system() -> void:
     var stars := get_children()
