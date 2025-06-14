@@ -26,35 +26,35 @@ var generator: GalaxyGenerator = GalaxyGenerator.new()
 var drone: Node2D
 
 func _ready() -> void:
-        rng.seed = seed
-        _generate_galaxy()
-        _highlight_last_visited()
-       _spawn_drone()
-        if Globals.first_load:
-                Globals.first_load = false
-                _open_random_star_system()
+    rng.seed = seed
+    _generate_galaxy()
+    _highlight_last_visited()
+    _spawn_drone()
+    if Globals.first_load:
+        Globals.first_load = false
+    _open_random_star_system()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
 func _generate_galaxy() -> void:
-	if scene_to_instance == null:
-		push_warning("scene_to_instance is not set")
-		return
-	var star_data := generator.generate_star_data(
-		star_count,
-		radius,
-		arm_count,
-		twist,
-		arm_spread,
-		random_offset,
-		rng
-	)
-	for data in star_data:
-		var instance: Node2D = scene_to_instance.instantiate()
-		instance.position = data.position
-		if "seed" in instance:
-			instance.seed = data.seed
-		add_child(instance)
+    if scene_to_instance == null:
+        push_warning("scene_to_instance is not set")
+        return
+    var star_data := generator.generate_star_data(
+        star_count,
+        radius,
+        arm_count,
+        twist,
+        arm_spread,
+        random_offset,
+        rng
+    )
+    for data in star_data:
+        var instance: Node2D = scene_to_instance.instantiate()
+        instance.position = data.position
+        if "seed" in instance:
+            instance.seed = data.seed
+        add_child(instance)
 
 func _highlight_last_visited() -> void:
         for star in get_children():
@@ -74,11 +74,11 @@ func _spawn_drone() -> void:
                        break
 
 func _open_random_star_system() -> void:
-	var stars := get_children()
-	if stars.size() == 0:
-		return
-       var star_index := rng.randi_range(0, stars.size() - 1)
-       var star := stars[star_index]
-       Globals.star_seed = star.seed
-       Globals.start_star_seed = star.seed
-       get_tree().change_scene_to_file("res://scenes/star_system.tscn")
+    var stars := get_children()
+    if stars.size() == 0:
+        return
+    var star_index := rng.randi_range(0, stars.size() - 1)
+    var star := stars[star_index]
+    Globals.star_seed = star.seed
+    Globals.start_star_seed = star.seed
+    get_tree().change_scene_to_file("res://scenes/star_system.tscn")

@@ -19,3 +19,6 @@ twist = 6.0
 arm_spread = 0.9
 
 [node name="MainCamera" parent="." instance=ExtResource("3_mlxib")]
+
+[node name="star" parent="." instance=ExtResource("1_jxn3g")]
+position = Vector2(-218, 125)
