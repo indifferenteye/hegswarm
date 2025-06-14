@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://g1us8g0k07it"]
+[gd_scene load_steps=3 format=3 uid="uid://dynwx5dquabyk"]
 
-[ext_resource type="Script" path="res://scripts/star_system.gd" id="2"]
+[ext_resource type="Script" uid="uid://ckfsxtw6qmhvo" path="res://scripts/star_system.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://bn0wywribwxc6" path="res://assets/main_camera.tscn" id="2_be1mv"]
 
 [node name="StarSystem" type="Node2D"]
 script = ExtResource("2")
+
+[node name="MainCamera" parent="." instance=ExtResource("2_be1mv")]
