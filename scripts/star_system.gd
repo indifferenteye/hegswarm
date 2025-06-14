@@ -43,10 +43,12 @@ func _spawn_planets(sun: Node2D) -> void:
 		planets.append(planet)
 
 func _spawn_drone() -> void:
-	if drone_scene == null or planets.is_empty():
-		return
-	drone = drone_scene.instantiate()
-	add_child(drone)
+       if drone_scene == null or planets.is_empty():
+               return
+       if Globals.star_seed != Globals.start_star_seed:
+               return
+       drone = drone_scene.instantiate()
+       add_child(drone)
 	var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
 	drone.position = planet.position + Vector2(20, 0)
 	drone_target = drone.position

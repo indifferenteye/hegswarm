@@ -63,7 +63,8 @@ func _open_random_star_system() -> void:
 	var stars := get_children()
 	if stars.size() == 0:
 		return
-	var star_index := rng.randi_range(0, stars.size() - 1)
-	var star := stars[star_index]
-	Globals.star_seed = star.seed
-	get_tree().change_scene_to_file("res://scenes/star_system.tscn")
+       var star_index := rng.randi_range(0, stars.size() - 1)
+       var star := stars[star_index]
+       Globals.star_seed = star.seed
+       Globals.start_star_seed = star.seed
+       get_tree().change_scene_to_file("res://scenes/star_system.tscn")
