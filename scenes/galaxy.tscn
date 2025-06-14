@@ -16,5 +16,8 @@ radius = 150.28
 arm_spread = 0.625
 
 [node name="Camera2D" type="Camera2D" parent="."]
-script = ExtResource("3_invlcp")
 zoom = Vector2(2.48, 2.48)
+script = ExtResource("3_invlcp")
+zoom_speed = 0.23
+max_zoom_in = 0.085
+max_zoom_out = 22.335
