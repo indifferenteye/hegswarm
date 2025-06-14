@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://np57nlm1t5vo" path="res://scripts/camera_controller.gd" id="1_aftc5"]
 
 [node name="MainCamera" type="Camera2D"]
-zoom = Vector2(2.48, 2.48)
+zoom = Vector2(1.5, 1.5)
 script = ExtResource("1_aftc5")
 move_speed = 400.0
 zoom_speed = 0.15
