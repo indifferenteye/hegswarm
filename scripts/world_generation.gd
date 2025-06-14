@@ -4,6 +4,8 @@ const GalaxyGenerator = preload("res://scripts/generators/galaxy_generator.gd")
 
 ## Scene instantiated for each generated star.
 @export var scene_to_instance: PackedScene
+## Scene used for the drone in the galaxy view.
+@export var drone_scene: PackedScene
 ## Total number of stars to create.
 @export var star_count: int = 100
 ## Maximum radius of the galaxy.
@@ -21,14 +23,16 @@ const GalaxyGenerator = preload("res://scripts/generators/galaxy_generator.gd")
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: GalaxyGenerator = GalaxyGenerator.new()
+var drone: Node2D
 
 func _ready() -> void:
-	rng.seed = seed
-	_generate_galaxy()
-	_highlight_last_visited()
-	if Globals.first_load:
-		Globals.first_load = false
-		_open_random_star_system()
+        rng.seed = seed
+        _generate_galaxy()
+        _highlight_last_visited()
+       _spawn_drone()
+        if Globals.first_load:
+                Globals.first_load = false
+                _open_random_star_system()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
@@ -53,11 +57,21 @@ func _generate_galaxy() -> void:
 		add_child(instance)
 
 func _highlight_last_visited() -> void:
-	for star in get_children():
-		if "seed" in star and star.seed == Globals.star_seed:
-			if star.has_method("mark_as_last_visited"):
-				star.mark_as_last_visited()
-				break
+        for star in get_children():
+                if "seed" in star and star.seed == Globals.star_seed:
+                        if star.has_method("mark_as_last_visited"):
+                                star.mark_as_last_visited()
+                                break
+
+func _spawn_drone() -> void:
+       if drone_scene == null:
+               return
+       for star in get_children():
+               if "seed" in star and star.seed == Globals.start_star_seed:
+                       drone = drone_scene.instantiate()
+                       add_child(drone)
+                       drone.position = star.position + Vector2(20, 0)
+                       break
 
 func _open_random_star_system() -> void:
 	var stars := get_children()
