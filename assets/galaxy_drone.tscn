@@ -1,12 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://ch4yve6u8nac5"]
 
-[ext_resource type="Script" path="res://scripts/galaxy_drone.gd" id="1"]
+[ext_resource type="Script" uid="uid://36wvo8i8ey51" path="res://scripts/galaxy_drone.gd" id="1"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
 [node name="GalaxyDrone" type="Node2D"]
 scale = Vector2(8, 7.88)
 script = ExtResource("1")
+enter_distance = 10.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1.96826, -0.642853)

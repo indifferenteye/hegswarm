@@ -32,7 +32,7 @@ func _ready() -> void:
     _spawn_drone()
     if Globals.first_load:
         Globals.first_load = false
-    _open_random_star_system()
+        _open_random_star_system()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
