@@ -16,15 +16,17 @@ func _ready() -> void:
 
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.
+func _on_star_clicked() -> void:
+	Globals.star_seed = seed
+	get_tree().change_scene_to_file('res://scenes/star_system.tscn')
+
 func _on_sprite_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		Globals.star_seed = seed
-		get_tree().change_scene_to_file("res://scenes/star_system.tscn")
-
+		_on_star_clicked()
 
 func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed:
-		_on_sprite_input_event(viewport, event, shape_idx)
+		_on_star_clicked()
 
 func _on_area_2d_mouse_entered() -> void:
 	$Sprite2D.modulate = hover_color

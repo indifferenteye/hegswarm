@@ -1,5 +1,7 @@
 extends Node2D
 
+const GalaxyGenerator = preload("res://scripts/generators/galaxy_generator.gd")
+
 ## Scene instantiated for each generated star.
 @export var scene_to_instance: PackedScene
 ## Total number of stars to create.
@@ -18,27 +20,36 @@ extends Node2D
 @export var seed: int = 0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var generator: GalaxyGenerator = GalaxyGenerator.new()
 
 func _ready() -> void:
-	rng.seed = seed
-	generate_spiral_galaxy()
-	_highlight_last_visited()
+rng.seed = seed
+_generate_galaxy()
+_highlight_last_visited()
 	if Globals.first_load:
 		Globals.first_load = false
 		_open_random_star_system()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
-func generate_spiral_galaxy() -> void:
-	for i in range(star_count):
+func _generate_galaxy() -> void:
+	if scene_to_instance == null:
+		push_warning("scene_to_instance is not set")
+		return
+	var star_data := generator.generate_star_data(
+		star_count,
+		radius,
+		arm_count,
+		twist,
+		arm_spread,
+		random_offset,
+		rng
+	)
+	for data in star_data:
 		var instance: Node2D = scene_to_instance.instantiate()
-		var t: float = float(i) / star_count
-		var arm := rng.randi() % arm_count
-		var r := t * radius + rng.randf_range(-random_offset, random_offset)
-		var angle := t * twist + TAU * arm / arm_count
-		angle += rng.randf_range(-arm_spread, arm_spread)
-		instance.position = Vector2(cos(angle), sin(angle)) * r
-		instance.seed = rng.randi()
+		instance.position = data.position
+		if "seed" in instance:
+			instance.seed = data.seed
 		add_child(instance)
 
 func _highlight_last_visited() -> void:
