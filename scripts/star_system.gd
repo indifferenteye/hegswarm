@@ -28,3 +28,10 @@ func _generate_planets(sun: Node2D) -> void:
 		var radius := orbit_step * (i + 1) + rng.randf_range(-orbit_step * 0.25, orbit_step * 0.25)
 		var angle := rng.randf_range(0.0, TAU)
 		planet.position = sun.position + Vector2(cos(angle), sin(angle)) * radius
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("return_to_galaxy"):
+		get_tree().change_scene_to_file("res://scenes/galaxy.tscn")
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/galaxy.tscn")
