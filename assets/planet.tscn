@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://be4xg8et6uoia"]
+[gd_scene load_steps=3 format=3 uid="uid://be4xg8et6uoia"]
+
+[ext_resource type="Script" path="res://scripts/planet.gd" id="1"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
 [node name="Planet" type="Node2D"]
+script = ExtResource("1")
 scale = Vector2(8, 7.88)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
