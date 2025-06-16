@@ -10,3 +10,6 @@ func _ready():
 		var angle = TAU * i / count
 		instance.position = Vector2(cos(angle), sin(angle)) * radius
 		add_child(instance)
+		var orbit = OrbitDrawer.new()
+		orbit.radius = radius
+		add_child(orbit)
