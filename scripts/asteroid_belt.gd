@@ -38,7 +38,7 @@ func _draw() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-        var local_pos := to_local(event.position)
+        var local_pos := to_local(get_global_mouse_position())
         var dist := local_pos.length()
         if dist >= radius - thickness / 2.0 and dist <= radius + thickness / 2.0:
             print("belt clicked")
