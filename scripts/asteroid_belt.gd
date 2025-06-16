@@ -30,7 +30,6 @@ func _generate_points() -> void:
         var dist := radius + _rng.randf_range(-thickness / 2.0, thickness / 2.0)
         var pos := Vector2(cos(angle), sin(angle)) * dist
         _points.append(pos)
-    update()
 
 
 func _draw() -> void:

@@ -74,7 +74,7 @@ func _process(delta: float) -> void:
             drone.position = drone_target
 
 func _unhandled_input(event: InputEvent) -> void:
-    if event.is_action_pressed('return_to_galaxy'):
+    if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
         get_tree().change_scene_to_file('res://scenes/galaxy.tscn')
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
         drone_target = get_global_mouse_position()
