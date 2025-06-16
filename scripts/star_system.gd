@@ -41,17 +41,12 @@ func _spawn_planets(sun: Node2D) -> void:
         return
     var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng)
     for offset in offsets:
-        var body: Node2D
-        if asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance:
-            body = asteroid_belt_scene.instantiate()
-            add_child(body)
-            body.position = sun.position
-            if "radius" in body:
-                body.radius = offset.length()
-        else:
-            body = planet_scene.instantiate()
-            add_child(body)
-            body.position = sun.position + offset
+        var is_belt := asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance
+        var body: Node2D = (is_belt ? asteroid_belt_scene : planet_scene).instantiate()
+        add_child(body)
+        body.position = sun.position + (is_belt ? Vector2.ZERO : offset)
+        if is_belt and "radius" in body:
+            body.radius = offset.length()
         planets.append(body)
 
 func _spawn_drone() -> void:
@@ -66,12 +61,13 @@ func _spawn_drone() -> void:
     drone_target = drone.position
 
 func _process(delta: float) -> void:
-    if drone:
-        var delta_pos := drone_target - drone.position
-        if delta_pos.length() > 1.0:
-            drone.position += delta_pos.normalized() * drone_speed * delta
-        else:
-            drone.position = drone_target
+    if not drone:
+        return
+    var delta_pos := drone_target - drone.position
+    if delta_pos.length() > 1.0:
+        drone.position += delta_pos.normalized() * drone_speed * delta
+    else:
+        drone.position = drone_target
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):

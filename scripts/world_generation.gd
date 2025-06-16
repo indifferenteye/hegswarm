@@ -25,6 +25,12 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: GalaxyGenerator = GalaxyGenerator.new()
 var drone: Node2D
 
+func _get_star_by_seed(seed_to_find: int) -> Node2D:
+    for star in get_children():
+        if "seed" in star and star.seed == seed_to_find:
+            return star
+    return null
+
 func _ready() -> void:
     rng.seed = seed
     _generate_galaxy()
@@ -58,22 +64,20 @@ func _generate_galaxy() -> void:
         add_child(instance)
 
 func _highlight_last_visited() -> void:
-        for star in get_children():
-                if "seed" in star and star.seed == Globals.star_seed:
-                        if star.has_method("mark_as_last_visited"):
-                                star.mark_as_last_visited()
-                                break
+    var star := _get_star_by_seed(Globals.star_seed)
+    if star and star.has_method("mark_as_last_visited"):
+        star.mark_as_last_visited()
 
 func _spawn_drone() -> void:
-       if drone_scene == null:
-               return
-       for star in get_children():
-               if "seed" in star and star.seed == Globals.start_star_seed:
-                       drone = drone_scene.instantiate()
-                       add_child(drone)
-                       drone.position = star.position + Vector2(20, 0)
-                       drone.set("target_position", drone.position)
-                       break
+    if drone_scene == null:
+        return
+    var star := _get_star_by_seed(Globals.start_star_seed)
+    if star == null:
+        return
+    drone = drone_scene.instantiate()
+    add_child(drone)
+    drone.position = star.position + Vector2(20, 0)
+    drone.set("target_position", drone.position)
 
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()
@@ -82,11 +86,10 @@ func _center_camera_on_last_visited() -> void:
     var camera := current_scene.get_node_or_null("MainCamera")
     if camera == null:
         return
-    for star in get_children():
-        if "seed" in star and star.seed == Globals.star_seed:
-            camera.position = star.global_position
-            camera.zoom = Vector2(1, 1)
-            break
+    var star := _get_star_by_seed(Globals.star_seed)
+    if star:
+        camera.position = star.global_position
+        camera.zoom = Vector2(1, 1)
 
 func _open_random_star_system() -> void:
     var stars := get_children()
@@ -94,12 +97,15 @@ func _open_random_star_system() -> void:
         return
     var star_index := rng.randi_range(0, stars.size() - 1)
     var star := stars[star_index]
-    Globals.star_seed = star.seed
-    Globals.start_star_seed = star.seed
-    get_tree().change_scene_to_file("res://scenes/star_system.tscn")
+    _open_star_system(star.seed)
 
 func _open_last_star_system() -> void:
-    get_tree().change_scene_to_file("res://scenes/star_system.tscn")
+    _open_star_system(Globals.star_seed)
+
+func _open_star_system(seed_to_open: int) -> void:
+    Globals.star_seed = seed_to_open
+    Globals.start_star_seed = seed_to_open
+    get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('toggle_star_system'):
