@@ -72,6 +72,7 @@ func _spawn_drone() -> void:
                        drone = drone_scene.instantiate()
                        add_child(drone)
                        drone.position = star.position + Vector2(20, 0)
+                       drone.set("target_position", drone.position)
                        break
 
 func _center_camera_on_last_visited() -> void:
