@@ -44,10 +44,14 @@ func _spawn_planets(sun: Node2D) -> void:
         var body: Node2D
         if asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance:
             body = asteroid_belt_scene.instantiate()
+            add_child(body)
+            body.position = sun.position
+            if "radius" in body:
+                body.radius = offset.length()
         else:
             body = planet_scene.instantiate()
-        add_child(body)
-        body.position = sun.position + offset
+            add_child(body)
+            body.position = sun.position + offset
         planets.append(body)
 
 func _spawn_drone() -> void:
