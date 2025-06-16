@@ -1,16 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://bey6hgn2q5xdd"]
+[gd_scene load_steps=4 format=3 uid="uid://bey6hgn2q5xdd"]
 
 [ext_resource type="PackedScene" uid="uid://cwj81lysn86dj" path="res://assets/star.tscn" id="1_jxn3g"]
 [ext_resource type="Script" uid="uid://dmtkapt354yxv" path="res://scripts/world_generation.gd" id="2_mlxib"]
+[ext_resource type="PackedScene" uid="uid://6rurf2kawqfh" path="res://assets/asteroid.tscn" id="3_ast"]
+
 
 [node name="Node2D" type="Node2D"]
+[node name="Sun" parent="." instance=ExtResource("1_jxn3g")]
 
 [node name="WorldGeneration" type="Node2D" parent="."]
 
 [node name="script" type="Node2D" parent="WorldGeneration"]
 script = ExtResource("2_mlxib")
-scene_to_instance = ExtResource("1_jxn3g")
-radius = 100.0
+scene_to_instance = ExtResource("3_ast")
+distance_to_sun = 100.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2.48, 2.48)
