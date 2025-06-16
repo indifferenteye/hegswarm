@@ -6,6 +6,10 @@ const StarSystemGenerator = preload('res://scripts/generators/star_system_genera
 @export var sun_scene: PackedScene = preload('res://assets/sun.tscn')
 ## Scene used for planets orbiting the star.
 @export var planet_scene: PackedScene = preload('res://assets/planet.tscn')
+## Scene used for asteroid belts that may appear instead of planets.
+@export var asteroid_belt_scene: PackedScene = preload('res://assets/asteroid_belt.tscn')
+## Chance that an orbit will contain an asteroid belt instead of a planet.
+@export var asteroid_belt_chance: float = 0.2
 ## Scene used for the player's drone.
 @export var drone_scene: PackedScene = preload('res://assets/drone.tscn')
 ## Minimum number of planets to generate.
@@ -37,10 +41,14 @@ func _spawn_planets(sun: Node2D) -> void:
         return
     var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng)
     for offset in offsets:
-        var planet: Node2D = planet_scene.instantiate()
-        add_child(planet)
-        planet.position = sun.position + offset
-        planets.append(planet)
+        var body: Node2D
+        if asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance:
+            body = asteroid_belt_scene.instantiate()
+        else:
+            body = planet_scene.instantiate()
+        add_child(body)
+        body.position = sun.position + offset
+        planets.append(body)
 
 func _spawn_drone() -> void:
     if drone_scene == null or planets.is_empty():
