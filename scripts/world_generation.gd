@@ -96,3 +96,10 @@ func _open_random_star_system() -> void:
     Globals.star_seed = star.seed
     Globals.start_star_seed = star.seed
     get_tree().change_scene_to_file("res://scenes/star_system.tscn")
+
+func _open_last_star_system() -> void:
+    get_tree().change_scene_to_file("res://scenes/star_system.tscn")
+
+func _unhandled_input(event: InputEvent) -> void:
+    if event.is_action_pressed('toggle_star_system'):
+        _open_last_star_system()
