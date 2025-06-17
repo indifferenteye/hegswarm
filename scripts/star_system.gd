@@ -27,8 +27,8 @@ var drone_targets: Array = []
 var orbit_radii: Array = []
 var sun: Node2D
 
-@export var orbit_color: Color = Color.SILVER
-@export var orbit_width: float = 1.0
+@export var orbit_color: Color = Color.GRAY
+@export var orbit_width: float = 1
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
 var asteroid_click_radius: float = 200.0
@@ -49,8 +49,9 @@ func _spawn_planets(sun: Node2D) -> void:
     orbit_radii.clear()
     var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng, 1.5)
     for offset in offsets:
-        orbit_radii.append(offset.length())
         var is_belt := asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance
+        if not is_belt:
+            orbit_radii.append(offset.length())
         var body: Node2D = (asteroid_belt_scene if is_belt else planet_scene).instantiate()
         add_child(body)
         body.position = sun.position + (Vector2.ZERO if is_belt else offset)
@@ -91,6 +92,13 @@ func _on_asteroid_clicked(click_pos: Vector2) -> void:
         if asteroid.global_position.distance_to(click_pos) <= asteroid_click_radius:
             positions.append(asteroid.global_position - click_pos)
     Globals.space_asteroid_positions = positions
+
+    var drone_positions: Array = []
+    for d in drones:
+        if d.global_position.distance_to(click_pos) <= asteroid_click_radius:
+            drone_positions.append(d.global_position - click_pos)
+    Globals.space_drone_positions = drone_positions
+
     get_tree().change_scene_to_file(Globals.SPACE_SCENE_PATH)
 
 func _process(delta: float) -> void:
