@@ -26,7 +26,7 @@ var drones: Array = []
 var drone_targets: Array = []
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
-var asteroid_click_radius: float = 10.0
+var asteroid_click_radius: float = 200.0
 
 func _ready() -> void:
     rng.seed = Globals.star_seed

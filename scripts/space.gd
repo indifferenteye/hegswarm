@@ -7,7 +7,8 @@ func _ready() -> void:
     for pos in positions:
         var asteroid: Node2D = asteroid_scene.instantiate()
         add_child(asteroid)
-        asteroid.position = pos
+        asteroid.position = pos * 10
+        asteroid.scale *= 10
     Globals.space_asteroid_positions = []
 
 func _unhandled_input(event: InputEvent) -> void:
