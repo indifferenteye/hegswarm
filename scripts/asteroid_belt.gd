@@ -30,5 +30,3 @@ func _generate_asteroids() -> void:
         var angle := rng.randf() * TAU
         var r := radius + rng.randf_range(-thickness / 2.0, thickness / 2.0)
         asteroid.position = Vector2(cos(angle), sin(angle)) * r
-
-

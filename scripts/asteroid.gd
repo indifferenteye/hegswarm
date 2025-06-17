@@ -7,8 +7,7 @@ signal clicked(global_position: Vector2)
 @export var color: Color = Color.WHITE
 
 func _ready() -> void:
-    update()
-    add_to_group("asteroid")
+  pass
 
 func _draw() -> void:
     draw_circle(Vector2.ZERO, radius, color)
