@@ -6,6 +6,7 @@ var _radius: float = 100.0
     get = get_radius
 @export var asteroid_count: int = 20
 @export var asteroid_scene: PackedScene = preload("res://assets/asteroid.tscn")
+@export var thickness: float = 20.0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
@@ -27,6 +28,7 @@ func _generate_asteroids() -> void:
         var asteroid: Node2D = asteroid_scene.instantiate()
         add_child(asteroid)
         var angle := rng.randf() * TAU
-        asteroid.position = Vector2(cos(angle), sin(angle)) * radius
+        var r := radius + rng.randf_range(-thickness / 2.0, thickness / 2.0)
+        asteroid.position = Vector2(cos(angle), sin(angle)) * r
 
 

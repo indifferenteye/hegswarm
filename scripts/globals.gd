@@ -10,3 +10,7 @@ var first_load: bool = true
 const STAR_SYSTEM_SCENE_PATH := "res://scenes/star_system.tscn"
 ## Number of drones that should spawn in the next opened star system.
 var entering_drone_count: int = 0
+## Positions of asteroids passed to the space scene.
+var space_asteroid_positions: Array = []
+## Path to the space scene file.
+const SPACE_SCENE_PATH := "res://scenes/space.tscn"
