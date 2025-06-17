@@ -82,12 +82,15 @@ func _highlight_last_visited() -> void:
 func _spawn_drone() -> void:
     if drone_scene == null:
         return
-    var star := _get_star_by_seed(Globals.start_star_seed)
-    if star == null:
-        return
     drone = drone_scene.instantiate()
     add_child(drone)
-    drone.position = star.position + Vector2(20, 0)
+    if Globals.first_load:
+        var star := _get_star_by_seed(Globals.start_star_seed)
+        if star == null:
+            return
+        drone.position = star.position + Vector2(20, 0)
+    else:
+        drone.position = Globals.galaxy_drone_position
     drone.set("target_position", drone.position)
     if "belongs_to_star_seed" in drone:
         drone.belongs_to_star_seed = Globals.start_star_seed
@@ -119,6 +122,8 @@ func _open_star_system(seed_to_open: int) -> void:
     Globals.entering_drone_count = _count_drones_near_star(seed_to_open)
     Globals.star_seed = seed_to_open
     Globals.start_star_seed = seed_to_open
+    if drone != null:
+        Globals.galaxy_drone_position = drone.global_position
     get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
 
 func _unhandled_input(event: InputEvent) -> void:
