@@ -4,9 +4,9 @@ var _radius: float = 100.0
 @export var radius: float = 100.0:
     set = set_radius,
     get = get_radius
-@export var asteroid_count: int = 50
+@export var asteroid_count: int = 150
 @export var asteroid_scene: PackedScene = preload("res://assets/asteroid.tscn")
-@export var thickness: float = 50.0
+@export var thickness: float = 100.0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
