@@ -91,6 +91,13 @@ func _on_asteroid_clicked(click_pos: Vector2) -> void:
         if asteroid.global_position.distance_to(click_pos) <= asteroid_click_radius:
             positions.append(asteroid.global_position - click_pos)
     Globals.space_asteroid_positions = positions
+
+    var drone_positions: Array = []
+    for d in drones:
+        if d.global_position.distance_to(click_pos) <= asteroid_click_radius:
+            drone_positions.append(d.global_position - click_pos)
+    Globals.space_drone_positions = drone_positions
+
     get_tree().change_scene_to_file(Globals.SPACE_SCENE_PATH)
 
 func _process(delta: float) -> void:

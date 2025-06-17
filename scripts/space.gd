@@ -1,6 +1,7 @@
 extends Node2D
 
 @export var asteroid_scene: PackedScene = preload("res://assets/space_asteroid.tscn")
+@export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
 
 func _ready() -> void:
     var positions := Globals.space_asteroid_positions
@@ -10,6 +11,14 @@ func _ready() -> void:
         asteroid.position = pos * 10
         asteroid.scale *= 10
     Globals.space_asteroid_positions = []
+
+    var drone_positions := Globals.space_drone_positions
+    for pos in drone_positions:
+        var d: Node2D = drone_scene.instantiate()
+        add_child(d)
+        d.position = pos * 10
+        d.scale *= 10
+    Globals.space_drone_positions = []
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('toggle_star_system'):
