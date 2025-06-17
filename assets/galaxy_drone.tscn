@@ -7,6 +7,7 @@
 [node name="GalaxyDrone" type="Node2D"]
 scale = Vector2(8, 7.88)
 script = ExtResource("1")
+move_speed = 320.0
 enter_distance = 10.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

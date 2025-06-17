@@ -2,12 +2,14 @@ extends Node2D
 
 signal clicked(global_position: Vector2)
 
-@export var radius: float = 2.0
-@export var click_radius: float = 4.0
+@export var radius: float = 1.0
+@export var click_radius: float = 30.0
 @export var color: Color = Color.WHITE
 
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
 func _ready() -> void:
-  pass
+  radius = rng.randf() * 2 * radius
 
 func _draw() -> void:
     draw_circle(Vector2.ZERO, radius, color)

@@ -17,7 +17,7 @@ const StarSystemGenerator = preload('res://scripts/generators/star_system_genera
 ## Maximum number of planets to generate.
 @export var max_planets: int = 5
 ## Spacing between each planet's orbit.
-@export var orbit_step: float = 40.0
+@export var orbit_step: float = 80.0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: StarSystemGenerator = StarSystemGenerator.new()
@@ -26,7 +26,7 @@ var drones: Array = []
 var drone_targets: Array = []
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
-var asteroid_click_radius: float = 10.0
+var asteroid_click_radius: float = 200.0
 
 func _ready() -> void:
     rng.seed = Globals.star_seed
@@ -41,7 +41,7 @@ func _spawn_planets(sun: Node2D) -> void:
     if planet_scene == null:
         push_warning('planet_scene is not set')
         return
-    var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng)
+    var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng, 1.5)
     for offset in offsets:
         var is_belt := asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance
         var body: Node2D = (asteroid_belt_scene if is_belt else planet_scene).instantiate()
