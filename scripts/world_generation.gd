@@ -19,7 +19,7 @@ const GalaxyGenerator = preload("res://scripts/generators/galaxy_generator.gd")
 ## Random radial offset for each star.
 @export var random_offset: float = 10.0
 ## Seed used to deterministically generate the galaxy.
-@export var seed: int = 0
+@export var seed: int = 2
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: GalaxyGenerator = GalaxyGenerator.new()
