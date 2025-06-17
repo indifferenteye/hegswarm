@@ -28,5 +28,3 @@ func _generate_asteroids() -> void:
         add_child(asteroid)
         var angle := rng.randf() * TAU
         asteroid.position = Vector2(cos(angle), sin(angle)) * radius
-
-
