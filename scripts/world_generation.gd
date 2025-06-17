@@ -84,13 +84,12 @@ func _spawn_drone() -> void:
         return
     drone = drone_scene.instantiate()
     add_child(drone)
-    if Globals.first_load:
+    var spawn_pos := Globals.galaxy_drone_position
+    if spawn_pos == Vector2.ZERO:
         var star := _get_star_by_seed(Globals.start_star_seed)
-        if star == null:
-            return
-        drone.position = star.position + Vector2(20, 0)
-    else:
-        drone.position = Globals.galaxy_drone_position
+        if star != null:
+            spawn_pos = star.position + Vector2(20, 0)
+    drone.position = spawn_pos
     drone.set("target_position", drone.position)
     if "belongs_to_star_seed" in drone:
         drone.belongs_to_star_seed = Globals.start_star_seed
