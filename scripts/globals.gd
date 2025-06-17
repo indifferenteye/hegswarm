@@ -8,3 +8,5 @@ var start_star_seed: int = 0
 var first_load: bool = true
 ## Path to the star system scene file.
 const STAR_SYSTEM_SCENE_PATH := "res://scenes/star_system.tscn"
+## Number of drones that should spawn in the next opened star system.
+var entering_drone_count: int = 0

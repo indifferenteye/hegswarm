@@ -3,6 +3,9 @@ extends Node2D
 @export var move_speed: float = 80.0
 @export var enter_distance: float = 40.0
 
+## Seed of the star this drone currently belongs to.
+@export var belongs_to_star_seed: int = 0
+
 var target_position: Vector2
 
 func _ready() -> void:
