@@ -2,8 +2,9 @@ extends Node2D
 
 signal clicked(global_position: Vector2)
 
+
 @export var radius: float = 1.0
-@export var click_radius: float = 30.0
+@export var click_radius: float = 32.0
 @export var color: Color = Color.WHITE
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
