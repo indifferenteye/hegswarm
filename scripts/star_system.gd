@@ -24,13 +24,18 @@ var generator: StarSystemGenerator = StarSystemGenerator.new()
 var planets: Array = []
 var drones: Array = []
 var drone_targets: Array = []
+var orbit_radii: Array = []
+var sun: Node2D
+
+@export var orbit_color: Color = Color.SILVER
+@export var orbit_width: float = 1.0
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
 var asteroid_click_radius: float = 200.0
 
 func _ready() -> void:
     rng.seed = Globals.star_seed
-    var sun: Node2D = sun_scene.instantiate()
+    sun = sun_scene.instantiate()
     add_child(sun)
     sun.position = Vector2.ZERO
     _spawn_planets(sun)
@@ -41,8 +46,10 @@ func _spawn_planets(sun: Node2D) -> void:
     if planet_scene == null:
         push_warning('planet_scene is not set')
         return
+    orbit_radii.clear()
     var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng)
     for offset in offsets:
+        orbit_radii.append(offset.length())
         var is_belt := asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance
         var body: Node2D = (asteroid_belt_scene if is_belt else planet_scene).instantiate()
         add_child(body)
@@ -50,6 +57,7 @@ func _spawn_planets(sun: Node2D) -> void:
         if is_belt and "radius" in body:
             body.radius = offset.length()
         planets.append(body)
+    queue_redraw()
 
 func _spawn_drones() -> void:
     if drone_scene == null or planets.is_empty():
@@ -65,6 +73,12 @@ func _spawn_drones() -> void:
         drones.append(d)
         drone_targets.append(d.position)
     Globals.entering_drone_count = 0
+
+func _draw() -> void:
+    if sun == null:
+        return
+    for radius in orbit_radii:
+        draw_arc(sun.position, radius, 0.0, TAU, 64, orbit_color, orbit_width)
 
 func _connect_asteroids() -> void:
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
