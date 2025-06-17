@@ -26,6 +26,7 @@ var drones: Array = []
 var drone_targets: Array = []
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
+var asteroid_click_radius: float = 10.0
 
 func _ready() -> void:
     rng.seed = Globals.star_seed
@@ -33,6 +34,7 @@ func _ready() -> void:
     add_child(sun)
     sun.position = Vector2.ZERO
     _spawn_planets(sun)
+    _connect_asteroids()
     _spawn_drones()
 
 func _spawn_planets(sun: Node2D) -> void:
@@ -63,6 +65,19 @@ func _spawn_drones() -> void:
         drones.append(d)
         drone_targets.append(d.position)
     Globals.entering_drone_count = 0
+
+func _connect_asteroids() -> void:
+    for asteroid in get_tree().get_nodes_in_group("asteroid"):
+        if asteroid.has_signal("clicked"):
+            asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked"))
+
+func _on_asteroid_clicked(click_pos: Vector2) -> void:
+    var positions: Array = []
+    for asteroid in get_tree().get_nodes_in_group("asteroid"):
+        if asteroid.global_position.distance_to(click_pos) <= asteroid_click_radius:
+            positions.append(asteroid.global_position - click_pos)
+    Globals.space_asteroid_positions = positions
+    get_tree().change_scene_to_file(Globals.SPACE_SCENE_PATH)
 
 func _process(delta: float) -> void:
     for i in range(drones.size()):
