@@ -12,6 +12,8 @@ const STAR_SYSTEM_SCENE_PATH := "res://scenes/star_system.tscn"
 var entering_drone_count: int = 0
 ## Positions of asteroids passed to the space scene.
 var space_asteroid_positions: Array = []
+## Seeds of asteroids passed to the space scene.
+var space_asteroid_seeds: Array = []
 ## Relative positions of drones passed to the space scene.
 var space_drone_positions: Array = []
 ## Position where the galaxy drone should reappear when returning from a star system.
