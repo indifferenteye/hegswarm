@@ -11,7 +11,7 @@ move_speed = 780.0
 detection_range = 2000.0
 mining_range = 120.0
 mining_rate = 2225.0
-separation_distance = 80.0
+separation_distance = 100.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1.96826, -0.642853)
