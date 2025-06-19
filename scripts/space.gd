@@ -6,6 +6,10 @@ extends Node2D
 @export var blueprint_scene: PackedScene = preload("res://assets/drone_blueprint.tscn")
 
 var build_mode: String = ""
+var selected_drones: Array = []
+var selecting: bool = false
+var select_start: Vector2
+var select_rect: Rect2 = Rect2()
 
 func _ready() -> void:
     var positions := Globals.space_asteroid_positions
@@ -37,6 +41,18 @@ func _ready() -> void:
         d.add_to_group("drone")
     Globals.space_drone_positions = []
 
+func _draw() -> void:
+    if selecting:
+        var rect := Rect2(to_local(select_start), select_rect.size)
+        draw_rect(rect, Color(0.4, 0.6, 1.0, 0.15), true)
+        draw_rect(rect, Color(0.4, 0.6, 1.0, 0.8), false, 1.0)
+
+func _process(_delta: float) -> void:
+    if selecting:
+        var current := get_global_mouse_position()
+        select_rect = Rect2(select_start, current - select_start)
+        queue_redraw()
+
 func _unhandled_input(event: InputEvent) -> void:
     if build_mode != "":
         if event is InputEventMouseButton:
@@ -54,11 +70,27 @@ func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('toggle_star_system'):
         _save_system_drone_positions()
         get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
-    elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-        var target := get_global_mouse_position()
-        for d in get_tree().get_nodes_in_group("drone"):
-            if d.has_method("move_to"):
-                d.move_to(target)
+    elif event is InputEventMouseButton:
+        if event.button_index == MOUSE_BUTTON_LEFT:
+            if event.pressed:
+                select_start = get_global_mouse_position()
+                selecting = true
+                select_rect = Rect2(select_start, Vector2.ZERO)
+                queue_redraw()
+            else:
+                selecting = false
+                var rect := Rect2(select_start, get_global_mouse_position() - select_start)
+                rect = rect.abs()
+                _apply_selection(rect)
+                select_rect = Rect2()
+                queue_redraw()
+        elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+            var target := get_global_mouse_position()
+            if selected_drones.is_empty():
+                return
+            for d in selected_drones:
+                if d.has_method("move_to"):
+                    d.move_to(target)
 
 func _on_back_button_pressed() -> void:
     _save_system_drone_positions()
@@ -71,6 +103,24 @@ func _on_build_toggle_pressed() -> void:
 
 func _on_drone_button_pressed() -> void:
     build_mode = "drone"
+
+func _set_drone_selected(d: Node2D, selected: bool) -> void:
+    var sprite: Sprite2D = d.get_node_or_null("Sprite2D")
+    if sprite:
+        sprite.modulate = (Color.YELLOW if selected else Color.WHITE)
+
+func _clear_selection() -> void:
+    for d in selected_drones:
+        _set_drone_selected(d, false)
+    selected_drones.clear()
+
+func _apply_selection(rect: Rect2) -> void:
+    _clear_selection()
+    rect = rect.abs()
+    for d in get_tree().get_nodes_in_group("drone"):
+        if rect.has_point(d.global_position):
+            selected_drones.append(d)
+            _set_drone_selected(d, true)
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     if processed_material_scene == null:

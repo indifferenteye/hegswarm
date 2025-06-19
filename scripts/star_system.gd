@@ -33,6 +33,11 @@ var drone_manager: StarSystemDroneManager
 @export var drone_speed: float = 80.0
 var asteroid_load_radius: float = 500.0
 
+var selected_drones: Array = []
+var selecting: bool = false
+var select_start: Vector2
+var select_rect: Rect2 = Rect2()
+
 func _ready() -> void:
     rng.seed = Globals.star_seed
     sun = sun_scene.instantiate()
@@ -48,6 +53,13 @@ func _ready() -> void:
     drone_manager.drone_scene = drone_scene
     drone_manager.drone_speed = drone_speed
     drone_manager.setup(rng.seed, planets)
+
+func _process(_delta: float) -> void:
+    if selecting:
+        var current := get_global_mouse_position()
+        select_rect = Rect2(select_start, current - select_start)
+        queue_redraw()
+
 
 func _spawn_planets(sun: Node2D) -> void:
     if planet_scene == null:
@@ -83,6 +95,10 @@ func _draw() -> void:
         return
     for radius in orbit_radii:
         draw_arc(sun.position, radius, 0.0, TAU, 64, orbit_color, orbit_width)
+    if selecting:
+        var rect := Rect2(to_local(select_start), select_rect.size)
+        draw_rect(rect, Color(0.4, 0.6, 1.0, 0.15), true)
+        draw_rect(rect, Color(0.4, 0.6, 1.0, 0.8), false, 1.0)
 
 func _apply_belt_mining() -> void:
     for belt in get_tree().get_nodes_in_group("asteroid_belt"):
@@ -95,6 +111,24 @@ func _connect_asteroids() -> void:
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
         if asteroid.has_signal("clicked"):
             asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked").bind(asteroid))
+
+func _set_drone_selected(d: Node2D, selected: bool) -> void:
+    var sprite: Sprite2D = d.get_node_or_null("Sprite2D")
+    if sprite:
+        sprite.modulate = (Color.YELLOW if selected else Color.WHITE)
+
+func _clear_selection() -> void:
+    for d in selected_drones:
+        _set_drone_selected(d, false)
+    selected_drones.clear()
+
+func _apply_selection(rect: Rect2) -> void:
+    _clear_selection()
+    rect = rect.abs()
+    for d in get_tree().get_nodes_in_group("drone"):
+        if rect.has_point(d.global_position):
+            selected_drones.append(d)
+            _set_drone_selected(d, true)
 
 func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
     Globals.space_origin = click_pos
@@ -130,10 +164,30 @@ func _unhandled_input(event: InputEvent) -> void:
         else:
             Globals.returning_drone_count = 0
         get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
-    elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-        var target := get_global_mouse_position()
-        if drone_manager:
-            drone_manager.set_all_targets(target)
+    elif event is InputEventMouseButton:
+        if event.button_index == MOUSE_BUTTON_LEFT:
+            if event.pressed:
+                select_start = get_global_mouse_position()
+                selecting = true
+                select_rect = Rect2(select_start, Vector2.ZERO)
+                queue_redraw()
+            else:
+                selecting = false
+                var rect := Rect2(select_start, get_global_mouse_position() - select_start)
+                rect = rect.abs()
+                _apply_selection(rect)
+                select_rect = Rect2()
+                queue_redraw()
+        elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+            var target := get_global_mouse_position()
+            if selected_drones.is_empty():
+                return
+            if drone_manager:
+                drone_manager.set_targets_for(selected_drones, target)
+            else:
+                for d in selected_drones:
+                    if d.has_method("move_to"):
+                        d.move_to(target)
 
 func _on_back_button_pressed() -> void:
     if drone_manager:
