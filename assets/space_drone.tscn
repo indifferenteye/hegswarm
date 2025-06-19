@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://space-drone"]
 
+[gd_scene load_steps=3 format=3 uid="uid://space-drone"]
+
+[ext_resource type="Script" path="res://scripts/space_drone.gd" id="1"]
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
 [node name="SpaceDrone" type="Node2D"]
+script = ExtResource("1")
 scale = Vector2(8, 7.88)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
