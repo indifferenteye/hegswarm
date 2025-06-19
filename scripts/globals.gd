@@ -27,6 +27,13 @@ var system_drone_positions: Array = []
 ## Path to the space scene file.
 const SPACE_SCENE_PATH := "res://scenes/space.tscn"
 
+## Mapping from belt identifiers to the percent of asteroids mined.
+var belt_mining_percent: Dictionary = {}
+## Total asteroid count for each belt.
+var belt_asteroid_count: Dictionary = {}
+## Belt seed of the asteroids currently loaded in the space scene.
+var space_belt_seed: int = 0
+
 ## Counts how many drones belonging to a particular star are near the given
 ## position.
 func count_drones_near_star(star_position: Vector2, seed_to_check: int) -> int:

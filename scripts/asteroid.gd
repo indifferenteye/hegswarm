@@ -9,6 +9,8 @@ signal mined(global_position: Vector2)
 @export var integrity: float = 1.0
 @export var seed: int = 0
 @export var voxel_size: float = 2.0
+## Seed of the asteroid belt this asteroid belongs to.
+var belt_seed: int = 0
 
 var _max_integrity: float = 1.0
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
