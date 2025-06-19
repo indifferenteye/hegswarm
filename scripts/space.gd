@@ -28,6 +28,11 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('toggle_star_system'):
         get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
+    elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+        var target := get_global_mouse_position()
+        for d in get_tree().get_nodes_in_group("drone"):
+            if d.has_method("move_to"):
+                d.move_to(target)
 
 func _on_back_button_pressed() -> void:
     get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)

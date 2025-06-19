@@ -41,7 +41,7 @@ func _on_star_clicked() -> void:
                 d.belongs_to_star_seed = seed
 
 func _handle_click_event(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
         _on_star_clicked()
 
 func _on_sprite_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
