@@ -6,15 +6,19 @@ extends Node2D
 
 func _ready() -> void:
     var positions := Globals.space_asteroid_positions
-    for pos in positions:
+    var seeds := Globals.space_asteroid_seeds
+    for i in range(positions.size()):
+        var pos = positions[i]
         var asteroid: Node2D = asteroid_scene.instantiate()
-        add_child(asteroid)
         asteroid.position = pos * 10
-        asteroid.scale *= 10
         asteroid.add_to_group("asteroid")
+        if i < seeds.size() and "seed" in asteroid:
+            asteroid.seed = seeds[i]
         if asteroid.has_signal("mined"):
             asteroid.connect("mined", Callable(self, "_on_asteroid_mined"))
+        add_child(asteroid)
     Globals.space_asteroid_positions = []
+    Globals.space_asteroid_seeds = []
 
     var drone_positions := Globals.space_drone_positions
     for pos in drone_positions:

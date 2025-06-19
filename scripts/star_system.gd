@@ -59,8 +59,11 @@ func _spawn_planets(sun: Node2D) -> void:
         var body: Node2D = (asteroid_belt_scene if is_belt else planet_scene).instantiate()
         add_child(body)
         body.position = sun.position + (Vector2.ZERO if is_belt else offset)
-        if is_belt and "radius" in body:
-            body.radius = offset.length()
+        if is_belt:
+            if "radius" in body:
+                body.radius = offset.length()
+            if "seed" in body:
+                body.seed = rng.randi()
         planets.append(body)
     queue_redraw()
 
@@ -79,10 +82,14 @@ func _connect_asteroids() -> void:
 func _on_asteroid_clicked(click_pos: Vector2) -> void:
     Globals.space_origin = click_pos
     var positions: Array = []
+    var seeds: Array = []
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
         if asteroid.global_position.distance_to(click_pos) <= asteroid_click_radius:
             positions.append(asteroid.global_position - click_pos)
+            if "seed" in asteroid:
+                seeds.append(asteroid.seed)
     Globals.space_asteroid_positions = positions
+    Globals.space_asteroid_seeds = seeds
 
     var drone_positions: Array = []
     for d in drone_manager.get_drones():

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bpv12a455fjao"]
+
+[ext_resource type="PackedScene" uid="uid://c4bna12wjus6x" path="res://assets/asteroid_belt.tscn" id="2_l6grw"]
+[ext_resource type="PackedScene" uid="uid://bn0wywribwxc6" path="res://assets/main_camera.tscn" id="2_pcu7d"]
+
+[node name="Testing" type="Node2D"]
+
+[node name="MainCamera" parent="." instance=ExtResource("2_pcu7d")]
+
+[node name="AsteroidBelt" parent="." instance=ExtResource("2_l6grw")]
