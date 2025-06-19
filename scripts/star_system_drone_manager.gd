@@ -22,6 +22,12 @@ func set_all_targets(target: Vector2) -> void:
     for i in range(drone_targets.size()):
         drone_targets[i] = target
 
+func set_targets_for(drones_to_set: Array, target: Vector2) -> void:
+    for d in drones_to_set:
+        var idx := drones.find(d)
+        if idx != -1:
+            drone_targets[idx] = target
+
 func _process(delta: float) -> void:
     for i in range(drones.size()):
         var d: Node2D = drones[i]
@@ -38,11 +44,12 @@ func _spawn_drones() -> void:
 
     if Globals.system_drone_positions.size() > 0:
         for pos in Globals.system_drone_positions:
-            var d: Node2D = drone_scene.instantiate()
-            add_child(d)
-            d.position = pos
-            drones.append(d)
-            drone_targets.append(d.position)
+        var d: Node2D = drone_scene.instantiate()
+        add_child(d)
+        d.add_to_group("drone")
+        d.position = pos
+        drones.append(d)
+        drone_targets.append(d.position)
         Globals.system_drone_positions = []
         Globals.entering_drone_count = 0
         return
@@ -54,6 +61,7 @@ func _spawn_drones() -> void:
     for i in range(count):
         var d: Node2D = drone_scene.instantiate()
         add_child(d)
+        d.add_to_group("drone")
         var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
         d.position = planet.position + Vector2(20, 0).rotated(rng.randf() * TAU)
         drones.append(d)
