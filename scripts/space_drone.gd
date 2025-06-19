@@ -7,14 +7,14 @@ extends Node2D
 ## Minimum distance this drone tries to keep from other drones.
 @export var separation_distance: float = 30.0
 
-var target: Node2D = null
-var manual_target: Vector2
-var has_manual_target: bool = false
-var carrying: Node2D = null
-var deliver_target: Node2D = null
+var asteroid_target: Node2D = null
+var manual_destination: Vector2
+var manual_destination_active: bool = false
+var carried_iron: Node2D = null
+var blueprint_target: Node2D = null
 
 ## Push away from nearby drones to avoid clumping.
-func _apply_separation(delta: float) -> void:
+func _apply_separation_force(delta: float) -> void:
     var push := Vector2.ZERO
     for d in get_tree().get_nodes_in_group("drone"):
         if d == self:
@@ -26,88 +26,88 @@ func _apply_separation(delta: float) -> void:
         position += push.normalized() * move_speed * delta
 
 func move_to(pos: Vector2) -> void:
-    manual_target = pos
-    has_manual_target = true
+    manual_destination = pos
+    manual_destination_active = true
 
 func _process(delta: float) -> void:
-    _apply_separation(delta)
-    if has_manual_target:
-        var dist := position.distance_to(manual_target)
+    _apply_separation_force(delta)
+    if manual_destination_active:
+        var dist := position.distance_to(manual_destination)
         if dist > 5.0:
-            var dir := (manual_target - position).normalized()
+            var dir := (manual_destination - position).normalized()
             position += dir * move_speed * delta
             return
         else:
-            has_manual_target = false
-    if carrying != null:
-        if deliver_target == null or not is_instance_valid(deliver_target):
-            deliver_target = _find_nearest_blueprint()
-        if deliver_target == null:
-            carrying = null
+            manual_destination_active = false
+    if carried_iron != null:
+        if blueprint_target == null or not is_instance_valid(blueprint_target):
+            blueprint_target = _get_nearest_blueprint()
+        if blueprint_target == null:
+            carried_iron = null
             return
-        var dist := position.distance_to(deliver_target.global_position)
+        var dist := position.distance_to(blueprint_target.global_position)
         if dist > mining_range:
-            var dir := (deliver_target.global_position - position).normalized()
+            var dir := (blueprint_target.global_position - position).normalized()
             position += dir * move_speed * delta
         else:
-            if deliver_target.has_method("add_iron"):
-                deliver_target.add_iron()
-            carrying = null
-            deliver_target = null
+            if blueprint_target.has_method("add_iron"):
+                blueprint_target.add_iron()
+            carried_iron = null
+            blueprint_target = null
         return
 
-    var iron := _find_nearest_processed_iron()
-    var blueprint := _find_nearest_blueprint()
+    var iron := _get_nearest_processed_iron()
+    var blueprint := _get_nearest_blueprint()
     if iron != null and blueprint != null:
         var dist := position.distance_to(iron.global_position)
         if dist > mining_range:
             var dir := (iron.global_position - position).normalized()
             position += dir * move_speed * delta
         else:
-            carrying = iron
+            carried_iron = iron
             iron.queue_free()
         return
 
-    if target == null or not is_instance_valid(target):
-        target = _find_nearest_asteroid()
-    if target == null:
+    if asteroid_target == null or not is_instance_valid(asteroid_target):
+        asteroid_target = _get_nearest_asteroid()
+    if asteroid_target == null:
         return
-    var dist := position.distance_to(target.global_position)
+    var dist := position.distance_to(asteroid_target.global_position)
     if dist > mining_range:
-        var dir := (target.global_position - position).normalized()
+        var dir := (asteroid_target.global_position - position).normalized()
         position += dir * move_speed * delta
     else:
-        if target.has_method("mine"):
-            target.mine(mining_rate * delta)
-            if not is_instance_valid(target):
-                target = null
+        if asteroid_target.has_method("mine"):
+            asteroid_target.mine(mining_rate * delta)
+            if not is_instance_valid(asteroid_target):
+                asteroid_target = null
 
-func _find_nearest_asteroid() -> Node2D:
-    var nearest
-    var nearest_dist := detection_range
+func _get_nearest_asteroid() -> Node2D:
+    var closest
+    var closest_distance := detection_range
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
-        var d := position.distance_to(asteroid.global_position)
-        if d < nearest_dist:
-            nearest_dist = d
-            nearest = asteroid
-    return nearest
+        var distance := position.distance_to(asteroid.global_position)
+        if distance < closest_distance:
+            closest_distance = distance
+            closest = asteroid
+    return closest
 
-func _find_nearest_processed_iron() -> Node2D:
-    var nearest
-    var nearest_dist := detection_range
+func _get_nearest_processed_iron() -> Node2D:
+    var closest
+    var closest_distance := detection_range
     for iron in get_tree().get_nodes_in_group("processed_iron"):
-        var d := position.distance_to(iron.global_position)
-        if d < nearest_dist:
-            nearest_dist = d
-            nearest = iron
-    return nearest
+        var distance := position.distance_to(iron.global_position)
+        if distance < closest_distance:
+            closest_distance = distance
+            closest = iron
+    return closest
 
-func _find_nearest_blueprint() -> Node2D:
-    var nearest
-    var nearest_dist := detection_range
+func _get_nearest_blueprint() -> Node2D:
+    var closest
+    var closest_distance := detection_range
     for bp in get_tree().get_nodes_in_group("drone_blueprint"):
-        var d := position.distance_to(bp.global_position)
-        if d < nearest_dist:
-            nearest_dist = d
-            nearest = bp
-    return nearest
+        var distance := position.distance_to(bp.global_position)
+        if distance < closest_distance:
+            closest_distance = distance
+            closest = bp
+    return closest
