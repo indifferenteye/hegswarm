@@ -16,5 +16,9 @@ var space_asteroid_positions: Array = []
 var space_drone_positions: Array = []
 ## Position where the galaxy drone should reappear when returning from a star system.
 var galaxy_drone_position: Vector2 = Vector2.ZERO
+## Star-system coordinates of the asteroid clicked to open the space scene.
+var space_origin: Vector2 = Vector2.ZERO
+## Absolute positions of drones to restore when returning from the space scene.
+var system_drone_positions: Array = []
 ## Path to the space scene file.
 const SPACE_SCENE_PATH := "res://scenes/space.tscn"

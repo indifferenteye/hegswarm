@@ -27,9 +27,11 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('toggle_star_system'):
+        _save_system_drone_positions()
         get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
 
 func _on_back_button_pressed() -> void:
+    _save_system_drone_positions()
     get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
 
 func _on_asteroid_mined(global_pos: Vector2) -> void:
@@ -39,3 +41,9 @@ func _on_asteroid_mined(global_pos: Vector2) -> void:
     add_child(iron)
     iron.global_position = global_pos
     iron.scale *= 10
+
+func _save_system_drone_positions() -> void:
+    var positions: Array = []
+    for d in get_tree().get_nodes_in_group("drone"):
+        positions.append(Globals.space_origin + d.position / 10)
+    Globals.system_drone_positions = positions

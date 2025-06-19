@@ -1,7 +1,7 @@
 extends Node2D
 
 @export var move_speed: float = 50.0
-@export var detection_range: float = 300.0
+@export var detection_range: float = 800.0
 @export var mining_range: float = 20.0
 @export var mining_rate: float = 1.0
 
