@@ -2,6 +2,7 @@ extends Node2D
 
 @export var asteroid_scene: PackedScene = preload("res://assets/space_asteroid.tscn")
 @export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
+@export var processed_iron_scene: PackedScene = preload("res://assets/processed_iron.tscn")
 
 func _ready() -> void:
     var positions := Globals.space_asteroid_positions
@@ -10,6 +11,9 @@ func _ready() -> void:
         add_child(asteroid)
         asteroid.position = pos * 10
         asteroid.scale *= 10
+        asteroid.add_to_group("asteroid")
+        if asteroid.has_signal("mined"):
+            asteroid.connect("mined", Callable(self, "_on_asteroid_mined"))
     Globals.space_asteroid_positions = []
 
     var drone_positions := Globals.space_drone_positions
@@ -18,6 +22,7 @@ func _ready() -> void:
         add_child(d)
         d.position = pos * 10
         d.scale *= 10
+        d.add_to_group("drone")
     Globals.space_drone_positions = []
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -26,3 +31,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_back_button_pressed() -> void:
     get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
+
+func _on_asteroid_mined(global_pos: Vector2) -> void:
+    if processed_iron_scene == null:
+        return
+    var iron: Node2D = processed_iron_scene.instantiate()
+    add_child(iron)
+    iron.global_position = global_pos
+    iron.scale *= 10
