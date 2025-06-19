@@ -10,9 +10,31 @@ extends Node2D
 
 var _default_color: Color
 var _is_last_visited: bool = false
+var _glow_sprite: Sprite2D
+
+func _generate_color() -> Color:
+    return StarVisuals.color_from_seed(seed)
+
+func _create_glow(color: Color) -> void:
+    _glow_sprite = Sprite2D.new()
+    _glow_sprite.texture = $Sprite2D.texture
+    _glow_sprite.scale = $Sprite2D.scale * 2.0
+    var mat := CanvasItemMaterial.new()
+    mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+    _glow_sprite.material = mat
+    _glow_sprite.modulate = color
+    _glow_sprite.z_index = -1
+    add_child(_glow_sprite)
+
+func _set_star_color(color: Color) -> void:
+    $Sprite2D.modulate = color
+    if _glow_sprite:
+        _glow_sprite.modulate = color
 
 func _ready() -> void:
-    _default_color = $Sprite2D.modulate
+    _default_color = _generate_color()
+    _set_star_color(_default_color)
+    _create_glow(_default_color)
 
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.
@@ -52,15 +74,15 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 
 
 func _on_area_2d_mouse_entered() -> void:
-    $Sprite2D.modulate = hover_color
+    _set_star_color(hover_color)
 
 func _on_area_2d_mouse_exited() -> void:
     if _is_last_visited:
-        $Sprite2D.modulate = visited_color
+        _set_star_color(visited_color)
     else:
-        $Sprite2D.modulate = _default_color
+        _set_star_color(_default_color)
 
 ## Marks this star as the last visited and updates its visual highlight.
 func mark_as_last_visited() -> void:
     _is_last_visited = true
-    $Sprite2D.modulate = visited_color
+    _set_star_color(visited_color)

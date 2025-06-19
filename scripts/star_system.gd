@@ -36,7 +36,11 @@ var asteroid_click_radius: float = 200.0
 func _ready() -> void:
     rng.seed = Globals.star_seed
     sun = sun_scene.instantiate()
+    if "seed" in sun:
+        sun.seed = Globals.star_seed
     add_child(sun)
+    if sun.has_method("_generate_visuals"):
+        sun._generate_visuals(Globals.star_seed)
     sun.position = Vector2.ZERO
     _spawn_planets(sun)
     _connect_asteroids()
