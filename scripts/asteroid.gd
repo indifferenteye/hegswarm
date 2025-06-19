@@ -26,11 +26,11 @@ func _ready() -> void:
     integrity = _max_integrity
 
 func _draw() -> void:
-    var scale := integrity / _max_integrity
-    var size := voxel_size * scale
+    var _scale := integrity / _max_integrity
+    var size := voxel_size * _scale
     _generate_voxels()
     for voxel in _voxels:
-        var pos: Vector2 = voxel * voxel_size * scale
+        var pos: Vector2 = voxel * voxel_size * _scale
         draw_rect(Rect2(pos, Vector2(size, size)), color)
 
 func _unhandled_input(event: InputEvent) -> void:

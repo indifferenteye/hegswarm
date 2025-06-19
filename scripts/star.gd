@@ -7,14 +7,9 @@ extends Node2D
 @export var hover_color: Color = Color.YELLOW
 ## Color used to indicate the star was the last system visited.
 @export var visited_color: Color = Color.AQUA
+@export var _default_color: Color = Color.WHITE
 
-var _default_color: Color
 var _is_last_visited: bool = false
-
-func _ready() -> void:
-    _default_color = $Sprite2D.modulate
-    if $Sprite2D.material != null:
-        $Sprite2D.material.set_shader_parameter("seed", float(seed))
 
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.
@@ -45,10 +40,10 @@ func _handle_click_event(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.pressed:
         _on_star_clicked(event)
 
-func _on_sprite_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+func _on_sprite_input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
     _handle_click_event(event)
 
-func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
        _handle_click_event(event)
 
 

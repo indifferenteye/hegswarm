@@ -59,8 +59,8 @@ func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     if "belt_seed" in asteroid:
         belt_seed = asteroid.belt_seed
     var key := str(Globals.star_seed) + "_" + str(belt_seed)
-    var count := Globals.belt_asteroid_count.get(key, 1)
-    var mined := Globals.belt_mining_percent.get(key, 0.0)
+    var count = Globals.belt_asteroid_count.get(key, 1)
+    var mined = Globals.belt_mining_percent.get(key, 0.0)
     mined += 1.0 / float(count)
     Globals.belt_mining_percent[key] = clamp(mined, 0.0, 1.0)
 
@@ -71,7 +71,7 @@ func _save_system_drone_positions() -> void:
     Globals.system_drone_positions = positions
 
 func _apply_mining_to_asteroids(key: String) -> void:
-    var percent := Globals.belt_mining_percent.get(key, 0.0)
+    var percent = Globals.belt_mining_percent.get(key, 0.0)
     if percent <= 0.0:
         return
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
@@ -81,4 +81,3 @@ func _apply_mining_to_asteroids(key: String) -> void:
         r.seed = int(asteroid.seed) + Globals.space_belt_seed + Globals.star_seed
         if r.randf() < percent:
             asteroid.queue_free()
-

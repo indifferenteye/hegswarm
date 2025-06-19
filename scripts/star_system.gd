@@ -31,12 +31,14 @@ var drone_manager: StarSystemDroneManager
 @export var orbit_width: float = 1
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
-var asteroid_load_radius: float = 300.0
+var asteroid_load_radius: float = 500.0
 
 func _ready() -> void:
     rng.seed = Globals.star_seed
     sun = sun_scene.instantiate()
     add_child(sun)
+    if "seed" in sun:
+        sun.seed = rng.seed
     sun.position = Vector2.ZERO
     _spawn_planets(sun)
     _apply_belt_mining()
@@ -58,16 +60,16 @@ func _spawn_planets(sun: Node2D) -> void:
         if not is_belt:
             orbit_radii.append(offset.length())
         var body: Node2D = (asteroid_belt_scene if is_belt else planet_scene).instantiate()
-        add_child(body)
         body.position = sun.position + (Vector2.ZERO if is_belt else offset)
+        if "seed" in body:
+            body.seed = rng.randi()
         if is_belt:
             if "radius" in body:
                 body.radius = offset.length()
-            if "seed" in body:
-                body.seed = rng.randi()
             var key := str(Globals.star_seed) + "_" + str(body.seed)
             if not Globals.belt_asteroid_count.has(key):
                 Globals.belt_asteroid_count[key] = body.asteroid_count
+        add_child(body)
         planets.append(body)
     queue_redraw()
 
@@ -81,7 +83,7 @@ func _draw() -> void:
 func _apply_belt_mining() -> void:
     for belt in get_tree().get_nodes_in_group("asteroid_belt"):
         var key := str(Globals.star_seed) + "_" + str(belt.seed)
-        var percent := Globals.belt_mining_percent.get(key, 0.0)
+        var percent :float = Globals.belt_mining_percent.get(key, 0.0)
         if belt.has_method("apply_mining"):
             belt.apply_mining(percent, Globals.star_seed)
 
@@ -101,7 +103,7 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
         if belt_seed != 0 and ("belt_seed" in asteroid and asteroid.belt_seed != belt_seed):
             continue
-        if asteroid.global_position.distance_to(click_pos) <= asteroid_click_radius:
+        if asteroid.global_position.distance_to(click_pos) <= asteroid_load_radius:
             positions.append(asteroid.global_position - click_pos)
             if "seed" in asteroid:
                 seeds.append(asteroid.seed)
@@ -127,4 +129,3 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_back_button_pressed() -> void:
     get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
-
