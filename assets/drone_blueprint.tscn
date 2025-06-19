@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://droneblueprint"]
+[gd_scene load_steps=2 format=3 uid="uid://dqfalwatro8wv"]
 
 [ext_resource type="Script" path="res://scripts/drone_blueprint.gd" id="1"]
 

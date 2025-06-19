@@ -4,6 +4,8 @@ extends Node2D
 @export var detection_range: float = 800.0
 @export var mining_range: float = 20.0
 @export var mining_rate: float = 1.0
+## Minimum distance this drone tries to keep from other drones.
+@export var separation_distance: float = 30.0
 
 var target: Node2D = null
 var manual_target: Vector2
@@ -11,11 +13,24 @@ var has_manual_target: bool = false
 var carrying: Node2D = null
 var deliver_target: Node2D = null
 
+## Push away from nearby drones to avoid clumping.
+func _apply_separation(delta: float) -> void:
+    var push := Vector2.ZERO
+    for d in get_tree().get_nodes_in_group("drone"):
+        if d == self:
+            continue
+        var dist := position.distance_to(d.position)
+        if dist < separation_distance and dist > 0.0:
+            push += (position - d.position).normalized() * (separation_distance - dist)
+    if push.length() > 0.0:
+        position += push.normalized() * move_speed * delta
+
 func move_to(pos: Vector2) -> void:
     manual_target = pos
     has_manual_target = true
 
 func _process(delta: float) -> void:
+    _apply_separation(delta)
     if has_manual_target:
         var dist := position.distance_to(manual_target)
         if dist > 5.0:
