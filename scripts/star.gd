@@ -16,7 +16,7 @@ func _ready() -> void:
 
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.
-func _on_star_clicked() -> void:
+func _on_star_clicked(event: InputEvent) -> void:
     var drones := get_tree().get_nodes_in_group("galaxy_drone")
     var near_count := 0
     var first_near_drone: Node2D = null
@@ -26,14 +26,14 @@ func _on_star_clicked() -> void:
                 near_count += 1
                 if first_near_drone == null:
                     first_near_drone = d
-    if near_count > 0:
+    if event.button_index == MOUSE_BUTTON_LEFT and near_count > 0:
         if first_near_drone != null:
             Globals.galaxy_drone_position = first_near_drone.global_position
         Globals.entering_drone_count = near_count
         Globals.star_seed = seed
         Globals.start_star_seed = seed
         get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
-    elif drones.size() > 0:
+    elif event.button_index == MOUSE_BUTTON_RIGHT and drones.size() > 0:
         var d := drones[0]
         if d.has_method("move_to"):
             d.call("move_to", global_position)
@@ -41,8 +41,8 @@ func _on_star_clicked() -> void:
                 d.belongs_to_star_seed = seed
 
 func _handle_click_event(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-        _on_star_clicked()
+    if event is InputEventMouseButton and event.pressed:
+        _on_star_clicked(event)
 
 func _on_sprite_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
     _handle_click_event(event)
