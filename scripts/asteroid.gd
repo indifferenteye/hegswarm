@@ -28,6 +28,7 @@ func _ready() -> void:
 func _draw() -> void:
     var scale := integrity / _max_integrity
     var size := voxel_size * scale
+    _generate_voxels()
     for voxel in _voxels:
         var pos: Vector2 = voxel * voxel_size * scale
         draw_rect(Rect2(pos, Vector2(size, size)), color)
@@ -49,10 +50,11 @@ func _generate_voxels() -> void:
     _voxels.clear()
     noise.noise_type = FastNoiseLite.TYPE_CELLULAR
     noise.frequency = .05
+    var integrity_fraction := integrity / _max_integrity
     var grid_radius := int(radius / voxel_size) + 1
     for x in range(-grid_radius, grid_radius + 1):
         for y in range(-grid_radius, grid_radius + 1):
             var dist := Vector2(x, y).length() / grid_radius
-            var n :float = (noise.get_noise_2d(x, y) + 1)
+            var n :float = (noise.get_noise_2d(x, y) + 1) * integrity_fraction
             if n > dist:
                 _voxels.append(Vector2(x, y))

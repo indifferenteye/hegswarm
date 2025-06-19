@@ -16,7 +16,7 @@ func move_to(pos: Vector2) -> void:
 func _process(delta: float) -> void:
     if has_manual_target:
         var dist := position.distance_to(manual_target)
-        if dist > 1.0:
+        if dist > 5.0:
             var dir := (manual_target - position).normalized()
             position += dir * move_speed * delta
             return

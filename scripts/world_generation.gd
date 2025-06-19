@@ -35,11 +35,12 @@ func _ready() -> void:
     rng.seed = seed
     _generate_galaxy()
     _highlight_last_visited()
-    _spawn_drone()
     _center_camera_on_last_visited()
     if Globals.first_load:
-        Globals.first_load = false
         _open_random_star_system()
+        Globals.first_load = false
+    else:
+        _spawn_drone()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
@@ -112,6 +113,8 @@ func _open_star_system(seed_to_open: int) -> void:
         Globals.entering_drone_count = Globals.count_drones_near_star(star.global_position, seed_to_open)
     else:
         Globals.entering_drone_count = 0
+    if Globals.first_load and Globals.entering_drone_count == 0:
+        Globals.entering_drone_count = 1
     Globals.star_seed = seed_to_open
     Globals.start_star_seed = seed_to_open
     if drone != null:

@@ -31,7 +31,7 @@ var drone_manager: StarSystemDroneManager
 @export var orbit_width: float = 1
 ## Speed at which the drone moves toward the target position.
 @export var drone_speed: float = 80.0
-var asteroid_click_radius: float = 200.0
+var asteroid_load_radius: float = 300.0
 
 func _ready() -> void:
     rng.seed = Globals.star_seed
@@ -110,7 +110,7 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
 
     var drone_positions: Array = []
     for d in drone_manager.get_drones():
-        if d.global_position.distance_to(click_pos) <= asteroid_click_radius:
+        if d.global_position.distance_to(click_pos) <= asteroid_load_radius:
             drone_positions.append(d.global_position - click_pos)
     Globals.space_drone_positions = drone_positions
 
