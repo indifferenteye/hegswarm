@@ -3,6 +3,9 @@ extends Node2D
 @export var asteroid_scene: PackedScene = preload("res://assets/space_asteroid.tscn")
 @export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
 @export var processed_iron_scene: PackedScene = preload("res://assets/processed_iron.tscn")
+@export var blueprint_scene: PackedScene = preload("res://assets/drone_blueprint.tscn")
+
+var build_mode: String = ""
 
 func _ready() -> void:
     var positions := Globals.space_asteroid_positions
@@ -35,6 +38,19 @@ func _ready() -> void:
     Globals.space_drone_positions = []
 
 func _unhandled_input(event: InputEvent) -> void:
+    if build_mode != "":
+        if event is InputEventMouseButton:
+            if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+                if build_mode == "drone" and blueprint_scene:
+                    var bp: Node2D = blueprint_scene.instantiate()
+                    add_child(bp)
+                    bp.global_position = get_global_mouse_position()
+                    bp.scale *= 10
+                return
+            elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+                build_mode = ""
+                return
+
     if event.is_action_pressed('toggle_star_system'):
         _save_system_drone_positions()
         get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
@@ -48,6 +64,14 @@ func _on_back_button_pressed() -> void:
     _save_system_drone_positions()
     get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
 
+func _on_build_toggle_pressed() -> void:
+    if has_node("UI/BuildPanel"):
+        var panel = get_node("UI/BuildPanel")
+        panel.visible = !panel.visible
+
+func _on_drone_button_pressed() -> void:
+    build_mode = "drone"
+
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     if processed_iron_scene == null:
         return
@@ -55,6 +79,7 @@ func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     add_child(iron)
     iron.global_position = global_pos
     iron.scale *= 10
+    iron.add_to_group("processed_iron")
     var belt_seed := 0
     if "belt_seed" in asteroid:
         belt_seed = asteroid.belt_seed
