@@ -59,4 +59,3 @@ func _spawn_drones() -> void:
         drones.append(d)
         drone_targets.append(d.position)
     Globals.entering_drone_count = 0
-

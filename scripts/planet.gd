@@ -8,7 +8,7 @@ extends Node2D
 func _ready() -> void:
     var mat = $Sprite2D.material
     if mat != null:
-        mat.set_shader_parameter("seed", float(seed))
+        mat.set_shader_parameter("seed", 1/float(seed))
         mat.set_shader_parameter("water", water)
         mat.set_shader_parameter("plants", plants)
 

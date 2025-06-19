@@ -8,7 +8,7 @@
 scale = Vector2(4.42367, 4.3384)
 script = ExtResource("1")
 move_speed = 780.0
-detection_range = 1000.0
+detection_range = 2000.0
 mining_range = 120.0
 mining_rate = 2225.0
 separation_distance = 80.0

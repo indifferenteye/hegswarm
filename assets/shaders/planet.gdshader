@@ -3,7 +3,7 @@ shader_type canvas_item;
 uniform float seed = 0.0;
 uniform float water = 0.5;
 uniform float plants = 0.5;
-uniform float grid_size = 50.0;
+uniform float grid_size = 10.0;
 
 vec3 get_land_color() {
     float r = max(0.0, 1.0 - water - plants);
