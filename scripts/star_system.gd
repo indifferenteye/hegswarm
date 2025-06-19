@@ -63,6 +63,18 @@ func _spawn_planets(sun: Node2D) -> void:
 func _spawn_drones() -> void:
     if drone_scene == null or planets.is_empty():
         return
+
+    if Globals.system_drone_positions.size() > 0:
+        for pos in Globals.system_drone_positions:
+            var d: Node2D = drone_scene.instantiate()
+            add_child(d)
+            d.position = pos
+            drones.append(d)
+            drone_targets.append(d.position)
+        Globals.system_drone_positions = []
+        Globals.entering_drone_count = 0
+        return
+
     var count := Globals.entering_drone_count
     if count <= 0:
         return
@@ -87,6 +99,7 @@ func _connect_asteroids() -> void:
             asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked"))
 
 func _on_asteroid_clicked(click_pos: Vector2) -> void:
+    Globals.space_origin = click_pos
     var positions: Array = []
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
         if asteroid.global_position.distance_to(click_pos) <= asteroid_click_radius:
