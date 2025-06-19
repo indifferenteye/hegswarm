@@ -63,6 +63,10 @@ func _spawn_planets(sun: Node2D) -> void:
         body.position = sun.position + (Vector2.ZERO if is_belt else offset)
         if "seed" in body:
             body.seed = rng.randi()
+        if "water" in body:
+            body.water = rng.randf()
+        if "plants" in body:
+            body.plants = rng.randf()
         if is_belt:
             if "radius" in body:
                 body.radius = offset.length()
