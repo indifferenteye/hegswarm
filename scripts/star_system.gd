@@ -125,6 +125,10 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
+        if drone_manager:
+            Globals.returning_drone_count = drone_manager.get_drones().size()
+        else:
+            Globals.returning_drone_count = 0
         get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
         var target := get_global_mouse_position()
@@ -132,4 +136,8 @@ func _unhandled_input(event: InputEvent) -> void:
             drone_manager.set_all_targets(target)
 
 func _on_back_button_pressed() -> void:
+    if drone_manager:
+        Globals.returning_drone_count = drone_manager.get_drones().size()
+    else:
+        Globals.returning_drone_count = 0
     get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)

@@ -20,6 +20,8 @@ var space_asteroid_seeds: Array = []
 var space_drone_positions: Array = []
 ## Position where the galaxy drone should reappear when returning from a star system.
 var galaxy_drone_position: Vector2 = Vector2.ZERO
+## Number of drones that should reappear in the galaxy scene.
+var returning_drone_count: int = 0
 ## Star-system coordinates of the asteroid clicked to open the space scene.
 var space_origin: Vector2 = Vector2.ZERO
 ## Absolute positions of drones to restore when returning from the space scene.

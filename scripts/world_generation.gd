@@ -72,17 +72,26 @@ func _highlight_last_visited() -> void:
 func _spawn_drone() -> void:
     if drone_scene == null:
         return
-    drone = drone_scene.instantiate()
-    add_child(drone)
+
     var spawn_pos := Globals.galaxy_drone_position
     if spawn_pos == Vector2.ZERO:
         var star := _get_star_by_seed(Globals.start_star_seed)
         if star != null:
-            spawn_pos = star.position + Vector2(20, 0)
-    drone.position = spawn_pos
-    drone.set("target_position", drone.position)
-    if "belongs_to_star_seed" in drone:
-        drone.belongs_to_star_seed = Globals.start_star_seed
+            spawn_pos = star.position
+
+    var count := Globals.returning_drone_count
+    if Globals.first_load and count == 0:
+        count = 1
+
+    for i in range(count):
+        var d: Node2D = drone_scene.instantiate()
+        add_child(d)
+        var pos := spawn_pos + Vector2(20, 0).rotated(rng.randf() * TAU)
+        d.position = pos
+        d.set("target_position", d.position)
+        if "belongs_to_star_seed" in d:
+            d.belongs_to_star_seed = Globals.start_star_seed
+    Globals.returning_drone_count = 0
 
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()
