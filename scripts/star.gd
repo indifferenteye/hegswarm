@@ -13,8 +13,6 @@ var _is_last_visited: bool = false
 
 func _ready() -> void:
     _default_color = $Sprite2D.modulate
-    if $Sprite2D.material != null:
-        $Sprite2D.material.set_shader_parameter("seed", float(seed))
 
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.

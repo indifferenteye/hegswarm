@@ -37,6 +37,8 @@ func _ready() -> void:
     rng.seed = Globals.star_seed
     sun = sun_scene.instantiate()
     add_child(sun)
+    if "seed" in sun:
+        sun.seed = rng.seed
     sun.position = Vector2.ZERO
     _spawn_planets(sun)
     _connect_asteroids()
