@@ -8,6 +8,8 @@ var start_star_seed: int = 0
 var first_load: bool = true
 ## Path to the star system scene file.
 const STAR_SYSTEM_SCENE_PATH := "res://scenes/star_system.tscn"
+## Path to the galaxy scene file.
+const GALAXY_SCENE_PATH := "res://scenes/galaxy.tscn"
 ## Number of drones that should spawn in the next opened star system.
 var entering_drone_count: int = 0
 ## Positions of asteroids passed to the space scene.
@@ -22,3 +24,13 @@ var space_origin: Vector2 = Vector2.ZERO
 var system_drone_positions: Array = []
 ## Path to the space scene file.
 const SPACE_SCENE_PATH := "res://scenes/space.tscn"
+
+## Counts how many drones belonging to a particular star are near the given
+## position.
+func count_drones_near_star(star_position: Vector2, seed_to_check: int) -> int:
+    var count := 0
+    for d in get_tree().get_nodes_in_group("galaxy_drone"):
+        if d.has_method("is_near") and d.call("is_near", star_position):
+            if "belongs_to_star_seed" in d and d.belongs_to_star_seed == seed_to_check:
+                count += 1
+    return count

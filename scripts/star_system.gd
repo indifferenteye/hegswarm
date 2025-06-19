@@ -1,6 +1,7 @@
 extends Node2D
 
 const StarSystemGenerator = preload('res://scripts/generators/star_system_generator.gd')
+const StarSystemDroneManager = preload('res://scripts/star_system_drone_manager.gd')
 
 ## Scene used for the system's star.
 @export var sun_scene: PackedScene = preload('res://assets/sun.tscn')
@@ -22,10 +23,9 @@ const StarSystemGenerator = preload('res://scripts/generators/star_system_genera
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: StarSystemGenerator = StarSystemGenerator.new()
 var planets: Array = []
-var drones: Array = []
-var drone_targets: Array = []
 var orbit_radii: Array = []
 var sun: Node2D
+var drone_manager: StarSystemDroneManager
 
 @export var orbit_color: Color = Color.GRAY
 @export var orbit_width: float = 1
@@ -40,7 +40,11 @@ func _ready() -> void:
     sun.position = Vector2.ZERO
     _spawn_planets(sun)
     _connect_asteroids()
-    _spawn_drones()
+    drone_manager = StarSystemDroneManager.new()
+    add_child(drone_manager)
+    drone_manager.drone_scene = drone_scene
+    drone_manager.drone_speed = drone_speed
+    drone_manager.setup(rng.seed, planets)
 
 func _spawn_planets(sun: Node2D) -> void:
     if planet_scene == null:
@@ -60,32 +64,6 @@ func _spawn_planets(sun: Node2D) -> void:
         planets.append(body)
     queue_redraw()
 
-func _spawn_drones() -> void:
-    if drone_scene == null or planets.is_empty():
-        return
-
-    if Globals.system_drone_positions.size() > 0:
-        for pos in Globals.system_drone_positions:
-            var d: Node2D = drone_scene.instantiate()
-            add_child(d)
-            d.position = pos
-            drones.append(d)
-            drone_targets.append(d.position)
-        Globals.system_drone_positions = []
-        Globals.entering_drone_count = 0
-        return
-
-    var count := Globals.entering_drone_count
-    if count <= 0:
-        return
-    for i in range(count):
-        var d: Node2D = drone_scene.instantiate()
-        add_child(d)
-        var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
-        d.position = planet.position + Vector2(20, 0).rotated(rng.randf() * TAU)
-        drones.append(d)
-        drone_targets.append(d.position)
-    Globals.entering_drone_count = 0
 
 func _draw() -> void:
     if sun == null:
@@ -107,30 +85,21 @@ func _on_asteroid_clicked(click_pos: Vector2) -> void:
     Globals.space_asteroid_positions = positions
 
     var drone_positions: Array = []
-    for d in drones:
+    for d in drone_manager.get_drones():
         if d.global_position.distance_to(click_pos) <= asteroid_click_radius:
             drone_positions.append(d.global_position - click_pos)
     Globals.space_drone_positions = drone_positions
 
     get_tree().change_scene_to_file(Globals.SPACE_SCENE_PATH)
 
-func _process(delta: float) -> void:
-    for i in range(drones.size()):
-        var d: Node2D = drones[i]
-        var target: Vector2 = drone_targets[i]
-        var delta_pos := target - d.position
-        if delta_pos.length() > 1.0:
-            d.position += delta_pos.normalized() * drone_speed * delta
-        else:
-            d.position = target
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
-        get_tree().change_scene_to_file('res://scenes/galaxy.tscn')
+        get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
         var target := get_global_mouse_position()
-        for i in range(drone_targets.size()):
-            drone_targets[i] = target
+        if drone_manager:
+            drone_manager.set_all_targets(target)
 
 func _on_back_button_pressed() -> void:
-    get_tree().change_scene_to_file('res://scenes/galaxy.tscn')
+    get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
