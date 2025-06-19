@@ -43,7 +43,6 @@ func _process(delta: float) -> void:
         if deliver_target == null or not is_instance_valid(deliver_target):
             deliver_target = _find_nearest_blueprint()
         if deliver_target == null:
-            carrying.queue_free()
             carrying = null
             return
         var dist := position.distance_to(deliver_target.global_position)
@@ -53,7 +52,6 @@ func _process(delta: float) -> void:
         else:
             if deliver_target.has_method("add_iron"):
                 deliver_target.add_iron()
-            carrying.queue_free()
             carrying = null
             deliver_target = null
         return
@@ -67,6 +65,7 @@ func _process(delta: float) -> void:
             position += dir * move_speed * delta
         else:
             carrying = iron
+            iron.queue_free()
         return
 
     if target == null or not is_instance_valid(target):
