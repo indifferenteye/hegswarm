@@ -10,7 +10,7 @@ extends Node2D
 var asteroid_target: Node2D = null
 var manual_destination: Vector2
 var manual_destination_active: bool = false
-var carried_material: Node2D = null
+var carried_material = null
 var blueprint_target: Node2D = null
 
 ## Push away from nearby drones to avoid clumping.
@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
             position += dir * move_speed * delta
         else:
             if blueprint_target.has_method("add_material"):
-                blueprint_target.add_material(carried_material.material_type)
+                blueprint_target.add_material(carried_material["material_type"])
             carried_material = null
             blueprint_target = null
         return
@@ -66,7 +66,7 @@ func _process(delta: float) -> void:
             position += dir * move_speed * delta
         else:
             print("set to ", carried_material)
-            carried_material = iron
+            carried_material = {"material_type": iron.material_type}
             iron.queue_free()
         return
 
