@@ -25,17 +25,6 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: GalaxyGenerator = GalaxyGenerator.new()
 var drone: Node2D
 
-func _count_drones_near_star(seed_to_check: int) -> int:
-    var star := _get_star_by_seed(seed_to_check)
-    if star == null:
-        return 0
-    var count := 0
-    for d in get_tree().get_nodes_in_group("galaxy_drone"):
-        if d.has_method("is_near") and d.call("is_near", star.global_position):
-            if "belongs_to_star_seed" in d and d.belongs_to_star_seed == seed_to_check:
-                count += 1
-    return count
-
 func _get_star_by_seed(seed_to_find: int) -> Node2D:
     for star in get_children():
         if "seed" in star and star.seed == seed_to_find:
@@ -118,7 +107,11 @@ func _open_last_star_system() -> void:
     _open_star_system(Globals.star_seed)
 
 func _open_star_system(seed_to_open: int) -> void:
-    Globals.entering_drone_count = _count_drones_near_star(seed_to_open)
+    var star := _get_star_by_seed(seed_to_open)
+    if star:
+        Globals.entering_drone_count = Globals.count_drones_near_star(star.global_position, seed_to_open)
+    else:
+        Globals.entering_drone_count = 0
     Globals.star_seed = seed_to_open
     Globals.start_star_seed = seed_to_open
     if drone != null:

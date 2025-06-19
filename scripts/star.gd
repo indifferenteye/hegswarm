@@ -18,14 +18,13 @@ func _ready() -> void:
 ## scene changes to the star system view.
 func _on_star_clicked(event: InputEvent) -> void:
     var drones := get_tree().get_nodes_in_group("galaxy_drone")
-    var near_count := 0
+    var near_count := Globals.count_drones_near_star(global_position, seed)
     var first_near_drone: Node2D = null
     for d in drones:
         if d.has_method("is_near") and d.call("is_near", global_position):
             if "belongs_to_star_seed" in d and d.belongs_to_star_seed == seed:
-                near_count += 1
-                if first_near_drone == null:
-                    first_near_drone = d
+                first_near_drone = d
+                break
     if event.button_index == MOUSE_BUTTON_LEFT and near_count > 0:
         if first_near_drone != null:
             Globals.galaxy_drone_position = first_near_drone.global_position
