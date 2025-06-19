@@ -13,7 +13,7 @@ shader_parameter/grid_size = 20.0
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
 [node name="Planet" type="Node2D"]
-scale = Vector2(12.0847, 9.49951)
+scale = Vector2(10, 10)
 script = ExtResource("1")
 water = 0.21
 plants = 0.823

@@ -64,9 +64,9 @@ func _spawn_planets(sun: Node2D) -> void:
         if "seed" in body:
             body.seed = rng.randi()
         if "water" in body:
-            body.water = rng.randf()
+            body.water = rng.randf() if rng.randf() < 0.4 else 0.0
         if "plants" in body:
-            body.plants = rng.randf()
+            body.plants = rng.randf() if rng.randf() < 0.2 else 0.0
         if is_belt:
             if "radius" in body:
                 body.radius = offset.length()
