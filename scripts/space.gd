@@ -2,7 +2,7 @@ extends Node2D
 
 @export var asteroid_scene: PackedScene = preload("res://assets/space_asteroid.tscn")
 @export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
-@export var processed_iron_scene: PackedScene = preload("res://assets/processed_iron.tscn")
+@export var processed_material_scene: PackedScene = preload("res://assets/processed_iron.tscn")
 @export var blueprint_scene: PackedScene = preload("res://assets/drone_blueprint.tscn")
 
 var build_mode: String = ""
@@ -73,13 +73,13 @@ func _on_drone_button_pressed() -> void:
     build_mode = "drone"
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
-    if processed_iron_scene == null:
+    if processed_material_scene == null:
         return
-    var iron: Node2D = processed_iron_scene.instantiate()
+    var iron: Node2D = processed_material_scene.instantiate()
     add_child(iron)
     iron.global_position = global_pos
     iron.scale *= 10
-    iron.add_to_group("processed_iron")
+    iron.add_to_group("processed_material")
     var belt_seed := 0
     if "belt_seed" in asteroid:
         belt_seed = asteroid.belt_seed

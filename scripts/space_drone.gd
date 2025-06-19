@@ -1,7 +1,7 @@
 extends Node2D
 
 @export var move_speed: float = 50.0
-@export var detection_range: float = 800.0
+@export var detection_range: float = 4000.0
 @export var mining_range: float = 20.0
 @export var mining_rate: float = 1.0
 ## Minimum distance this drone tries to keep from other drones.
@@ -10,7 +10,7 @@ extends Node2D
 var asteroid_target: Node2D = null
 var manual_destination: Vector2
 var manual_destination_active: bool = false
-var carried_iron: Node2D = null
+var carried_material: Node2D = null
 var blueprint_target: Node2D = null
 
 ## Push away from nearby drones to avoid clumping.
@@ -39,24 +39,25 @@ func _process(delta: float) -> void:
             return
         else:
             manual_destination_active = false
-    if carried_iron != null:
+    print(carried_material)
+    if carried_material != null:
         if blueprint_target == null or not is_instance_valid(blueprint_target):
             blueprint_target = _get_nearest_blueprint()
         if blueprint_target == null:
-            carried_iron = null
+            #carried_material = null
             return
         var dist := position.distance_to(blueprint_target.global_position)
         if dist > mining_range:
             var dir := (blueprint_target.global_position - position).normalized()
             position += dir * move_speed * delta
         else:
-            if blueprint_target.has_method("add_iron"):
-                blueprint_target.add_iron()
-            carried_iron = null
+            if blueprint_target.has_method("add_material"):
+                blueprint_target.add_material(carried_material.material_type)
+            carried_material = null
             blueprint_target = null
         return
 
-    var iron := _get_nearest_processed_iron()
+    var iron := _get_nearest_material()
     var blueprint := _get_nearest_blueprint()
     if iron != null and blueprint != null:
         var dist := position.distance_to(iron.global_position)
@@ -64,7 +65,8 @@ func _process(delta: float) -> void:
             var dir := (iron.global_position - position).normalized()
             position += dir * move_speed * delta
         else:
-            carried_iron = iron
+            print("set to ", carried_material)
+            carried_material = iron
             iron.queue_free()
         return
 
@@ -92,10 +94,10 @@ func _get_nearest_asteroid() -> Node2D:
             closest = asteroid
     return closest
 
-func _get_nearest_processed_iron() -> Node2D:
+func _get_nearest_material() -> Node2D:
     var closest
     var closest_distance := detection_range
-    for iron in get_tree().get_nodes_in_group("processed_iron"):
+    for iron in get_tree().get_nodes_in_group("processed_material"):
         var distance := position.distance_to(iron.global_position)
         if distance < closest_distance:
             closest_distance = distance
