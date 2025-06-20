@@ -2,6 +2,8 @@ extends Node2D
 
 const StarSystemGenerator = preload('res://scripts/generators/star_system_generator.gd')
 const StarSystemDroneManager = preload('res://scripts/star_system_drone_manager.gd')
+const BeltManager = preload("res://scripts/utils/belt_manager.gd")
+const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 
 ## Scene used for the system's star.
 @export var sun_scene: PackedScene = preload('res://assets/sun.tscn')
@@ -114,23 +116,6 @@ func _connect_asteroids() -> void:
         if asteroid.has_signal("clicked"):
             asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked").bind(asteroid))
 
-func _set_drone_selected(d: Node2D, selected: bool) -> void:
-    var sprite: Sprite2D = d.get_node_or_null("Sprite2D")
-    if sprite:
-        sprite.modulate = (Color.YELLOW if selected else Color.WHITE)
-
-func _clear_selection() -> void:
-    for d in selected_drones:
-        _set_drone_selected(d, false)
-    selected_drones.clear()
-
-func _apply_selection(rect: Rect2) -> void:
-    _clear_selection()
-    rect = rect.abs()
-    for d in get_tree().get_nodes_in_group("drone"):
-        if rect.has_point(d.global_position):
-            selected_drones.append(d)
-            _set_drone_selected(d, true)
 
 func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
     Globals.space_origin = click_pos
@@ -180,7 +165,7 @@ func _unhandled_input(event: InputEvent) -> void:
                 selecting = false
                 var rect := Rect2(select_start, get_global_mouse_position() - select_start)
                 rect = rect.abs()
-                _apply_selection(rect)
+                SelectionUtils.apply_selection(self, rect, selected_drones)
                 select_rect = Rect2()
                 queue_redraw()
         elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
