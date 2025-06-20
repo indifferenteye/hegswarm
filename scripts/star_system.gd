@@ -75,6 +75,8 @@ func _spawn_planets(sun: Node2D) -> void:
         body.position = sun.position + (Vector2.ZERO if is_belt else offset)
         if "seed" in body:
             body.seed = rng.randi()
+        if is_belt and "star_seed" in body:
+            body.star_seed = Globals.star_seed
         if "water" in body:
             body.water = rng.randf()
         if "plants" in body:

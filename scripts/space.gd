@@ -188,6 +188,7 @@ func _apply_offline_progress(key: String) -> void:
         return
     var mined_total := 0.0
     var total_asteroids = Globals.belt_asteroid_count.get(key, 1)
+    var total_integrity := Globals.belt_total_integrity.get(key, float(total_asteroids))
     for scene_path in counts.keys():
         var scene := load(scene_path)
         if scene == null:
@@ -200,9 +201,9 @@ func _apply_offline_progress(key: String) -> void:
         if "move_speed" in inst:
             speed = inst.move_speed
         inst.free()
-        mined_total += float(counts[scene_path]) * rate * float(now - last_time) * offline_progress_factor / (total_asteroids / speed) 
+        mined_total += float(counts[scene_path]) * rate * float(now - last_time) * offline_progress_factor / (total_integrity / speed)
     var percent = Globals.belt_mining_percent.get(key, 0.0)
-    percent += mined_total / float(total_asteroids)
+    percent += mined_total / float(total_integrity)
     Globals.belt_mining_percent[key] = clamp(percent, 0.0, 1.0)
     Globals.belt_last_loaded[key] = now
 

@@ -58,3 +58,23 @@ func _generate_voxels() -> void:
             var n :float = (noise.get_noise_2d(x, y) + 1) * integrity_fraction
             if n > dist:
                 _voxels.append(Vector2(x, y))
+
+## Returns the maximum integrity for an asteroid based on its base radius,
+## voxel size, and seed without instantiating the node.
+static func calculate_integrity(base_radius: float, voxel_size: float, seed: int) -> float:
+    var rng := RandomNumberGenerator.new()
+    rng.seed = seed
+    var noise := FastNoiseLite.new()
+    noise.seed = seed
+    noise.noise_type = FastNoiseLite.TYPE_CELLULAR
+    noise.frequency = .05
+    var radius := rng.randf() * 2.0 * base_radius
+    var grid_radius := int(radius / voxel_size) + 1
+    var count := 0
+    for x in range(-grid_radius, grid_radius + 1):
+        for y in range(-grid_radius, grid_radius + 1):
+            var dist := Vector2(x, y).length() / grid_radius
+            var n : float = (noise.get_noise_2d(x, y) + 1)
+            if n > dist:
+                count += 1
+    return float(count)

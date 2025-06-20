@@ -8,6 +8,9 @@ var _radius: float = 300.0
 @export var asteroid_scene: PackedScene = preload("res://assets/asteroid.tscn")
 @export var thickness: float = 100.0
 @export var seed: int = 0
+@export var star_seed: int = 0
+
+var _total_integrity: float = 0.0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
@@ -25,12 +28,14 @@ func get_radius() -> float:
 
 func _generate_asteroids() -> void:
     rng.seed = seed
+    _total_integrity = 0.0
     for child in get_children():
         child.queue_free()
     for i in range(asteroid_count):
         var asteroid: Node2D = asteroid_scene.instantiate()
+        var a_seed := rng.randi()
         if "seed" in asteroid:
-            asteroid.seed = rng.randi()
+            asteroid.seed = a_seed
         if "belt_seed" in asteroid:
             asteroid.belt_seed = seed
         add_child(asteroid)
@@ -38,6 +43,15 @@ func _generate_asteroids() -> void:
         var angle := rng.randf() * TAU
         var r := radius + rng.randf_range(-thickness / 2.0, thickness / 2.0)
         asteroid.position = Vector2(cos(angle), sin(angle)) * r
+        if asteroid.has_method("calculate_integrity"):
+            _total_integrity += asteroid.calculate_integrity(asteroid.radius, asteroid.voxel_size, a_seed)
+        else:
+            _total_integrity += 1.0
+
+    if star_seed != 0:
+        var key := str(star_seed) + "_" + str(seed)
+        if not Globals.belt_total_integrity.has(key):
+            Globals.belt_total_integrity[key] = _total_integrity
 
 ## Removes asteroids based on the given mined percentage using the provided
 ## system seed for deterministic results.

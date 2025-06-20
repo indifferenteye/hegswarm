@@ -37,6 +37,8 @@ const SPACE_SCENE_PATH := "res://scenes/space.tscn"
 var belt_mining_percent: Dictionary = {}
 ## Total asteroid count for each belt.
 var belt_asteroid_count: Dictionary = {}
+## Total voxel integrity for each belt.
+var belt_total_integrity: Dictionary = {}
 ## Belt seed of the asteroids currently loaded in the space scene.
 var space_belt_seed: int = 0
 ## Mapping from belt identifiers to a dictionary of drone scene paths and counts.
