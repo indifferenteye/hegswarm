@@ -35,6 +35,10 @@ var belt_mining_percent: Dictionary = {}
 var belt_asteroid_count: Dictionary = {}
 ## Belt seed of the asteroids currently loaded in the space scene.
 var space_belt_seed: int = 0
+## Mapping from belt identifiers to a dictionary of drone scene paths and counts.
+var belt_drones: Dictionary = {}
+## Timestamp of the last time each belt was loaded.
+var belt_last_loaded: Dictionary = {}
 
 ## Counts how many drones belonging to a particular star are near the given
 ## position.

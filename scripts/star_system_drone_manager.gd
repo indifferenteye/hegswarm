@@ -47,6 +47,7 @@ func _spawn_drones() -> void:
             var d: Node2D = drone_scene.instantiate()
             add_child(d)
             d.add_to_group("drone")
+            d.set_meta("scene_path", drone_scene.resource_path)
             d.position = pos
             drones.append(d)
             drone_targets.append(d.position)
@@ -62,6 +63,7 @@ func _spawn_drones() -> void:
         var d: Node2D = drone_scene.instantiate()
         add_child(d)
         d.add_to_group("drone")
+        d.set_meta("scene_path", drone_scene.resource_path)
         var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
         d.position = planet.position + Vector2(20, 0).rotated(rng.randf() * TAU)
         drones.append(d)
