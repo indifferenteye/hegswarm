@@ -1,5 +1,8 @@
 extends Node2D
 
+const BeltManager = preload("res://scripts/utils/belt_manager.gd")
+const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
+
 @export var asteroid_scene: PackedScene = preload("res://assets/space_asteroid.tscn")
 @export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
 @export var processed_material_scene: PackedScene = preload("res://assets/processed_iron.tscn")
@@ -16,7 +19,7 @@ func _ready() -> void:
     var seeds := Globals.space_asteroid_seeds
     var belt_seed := Globals.space_belt_seed
     var key := str(Globals.star_seed) + "_" + str(belt_seed)
-    _apply_offline_progress(key)
+    BeltManager.apply_offline_progress(key)
     for i in range(positions.size()):
         var pos = positions[i]
         var asteroid: Node2D = asteroid_scene.instantiate()
@@ -29,7 +32,7 @@ func _ready() -> void:
         if asteroid.has_signal("mined"):
             asteroid.connect("mined", Callable(self, "_on_asteroid_mined").bind(asteroid))
         add_child(asteroid)
-    _apply_mining_to_asteroids(key)
+    BeltManager.apply_mining_to_asteroids(self, key)
     Globals.space_asteroid_positions = []
     Globals.space_asteroid_seeds = []
 
@@ -97,7 +100,7 @@ func _unhandled_input(event: InputEvent) -> void:
                 selecting = false
                 var rect := Rect2(select_start, get_global_mouse_position() - select_start)
                 rect = rect.abs()
-                _apply_selection(rect)
+                SelectionUtils.apply_selection(self, rect, selected_drones)
                 select_rect = Rect2()
                 queue_redraw()
         elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
@@ -120,23 +123,6 @@ func _on_build_toggle_pressed() -> void:
 func _on_drone_button_pressed() -> void:
     build_mode = "drone"
 
-func _set_drone_selected(d: Node2D, selected: bool) -> void:
-    var sprite: Sprite2D = d.get_node_or_null("Sprite2D")
-    if sprite:
-        sprite.modulate = (Color.YELLOW if selected else Color.WHITE)
-
-func _clear_selection() -> void:
-    for d in selected_drones:
-        _set_drone_selected(d, false)
-    selected_drones.clear()
-
-func _apply_selection(rect: Rect2) -> void:
-    _clear_selection()
-    rect = rect.abs()
-    for d in get_tree().get_nodes_in_group("drone"):
-        if rect.has_point(d.global_position):
-            selected_drones.append(d)
-            _set_drone_selected(d, true)
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     if processed_material_scene == null:
@@ -156,71 +142,9 @@ func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     Globals.belt_mining_percent[key] = clamp(mined, 0.0, 1.0)
 
 func _save_system_drone_positions() -> void:
-    _record_belt_state()
+    BeltManager.record_belt_state(self, drone_scene)
     var positions: Array = []
     for d in get_tree().get_nodes_in_group("drone"):
         positions.append(Globals.space_origin + d.position / 10)
     Globals.system_drone_positions = positions
 
-func _apply_mining_to_asteroids(key: String) -> void:
-    var percent = Globals.belt_mining_percent.get(key, 0.0)
-    if percent <= 0.0:
-        return
-    for asteroid in get_tree().get_nodes_in_group("asteroid"):
-        if not ("seed" in asteroid):
-            continue
-        var r := RandomNumberGenerator.new()
-        r.seed = int(asteroid.seed) + Globals.space_belt_seed + Globals.star_seed
-        if r.randf() < percent:
-            asteroid.queue_free()
-
-## Estimate asteroid mining progress that occurred while this belt was unloaded.
-func _apply_offline_progress(key: String) -> void:
-    var offline_progress_factor = 0.05
-    var last_time = Globals.belt_last_loaded.get(key, 0)
-    var now := Time.get_unix_time_from_system()
-    if last_time == 0:
-        Globals.belt_last_loaded[key] = now
-        return
-    var counts: Dictionary = Globals.belt_drones.get(key, {})
-    if counts.is_empty():
-        Globals.belt_last_loaded[key] = now
-        return
-    var mined_total := 0.0
-    var total_asteroids = Globals.belt_asteroid_count.get(key, 1)
-    var total_integrity = Globals.belt_total_integrity.get(key, float(total_asteroids))
-    for scene_path in counts.keys():
-        var scene := load(scene_path)
-        if scene == null:
-            continue
-        var inst = scene.instantiate()
-        var rate := 0.0
-        if "mining_rate" in inst:
-            rate = inst.mining_rate
-        var speed := 0.0
-        if "move_speed" in inst:
-            speed = inst.move_speed
-        inst.free()
-        mined_total += float(counts[scene_path]) * rate * float(now - last_time) * offline_progress_factor / (total_integrity / speed)
-    var percent = Globals.belt_mining_percent.get(key, 0.0)
-    percent += mined_total / float(total_integrity)
-    print(percent)
-    Globals.belt_mining_percent[key] = clamp(percent, 0.0, 1.0)
-    Globals.belt_last_loaded[key] = now
-
-## Save how many drones of each type are currently in this belt and when it was left.
-func _record_belt_state() -> void:
-    var belt_seed := Globals.space_belt_seed
-    if belt_seed == 0:
-        return
-    var key := str(Globals.star_seed) + "_" + str(belt_seed)
-    var counts: Dictionary = {}
-    for d in get_tree().get_nodes_in_group("drone"):
-        var path := ""
-        if d.has_meta("scene_path"):
-            path = str(d.get_meta("scene_path"))
-        else:
-            path = drone_scene.resource_path
-        counts[path] = counts.get(path, 0) + 1
-    Globals.belt_drones[key] = counts
-    Globals.belt_last_loaded[key] = Time.get_unix_time_from_system()
