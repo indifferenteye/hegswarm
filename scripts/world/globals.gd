@@ -11,7 +11,7 @@ const STAR_SYSTEM_SCENE_PATH := "res://scenes/star_system.tscn"
 ## Path to the galaxy scene file.
 const GALAXY_SCENE_PATH := "res://scenes/galaxy.tscn"
 ## Path to the drone scene used in the galaxy view.
-const GALAXY_DRONE_SCENE_PATH := "res://assets/galaxy_drone.tscn"
+const GALAXY_DRONE_SCENE_PATH := "res://assets/drones/galaxy_drone.tscn"
 ## Number of drones that should spawn in the next opened star system.
 var entering_drone_count: int = 0
 ## Mapping from star seeds to dictionaries storing drone type counts.

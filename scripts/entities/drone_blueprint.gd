@@ -3,7 +3,7 @@ extends Node2D
 ## Materials required to finish this blueprint. Each key is a material type
 ## and the value is the amount needed.
 @export var required_materials: Dictionary = {"iron": 5}
-@export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
+@export var drone_scene: PackedScene = preload("res://assets/drones/space_drone.tscn")
 
 var current_materials: Dictionary = {}
 

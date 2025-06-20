@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cwj81lysn86dj"]
 
-[ext_resource type="Script" uid="uid://cmfxb0d1drs4x" path="res://scripts/star.gd" id="1"]
+[ext_resource type="Script" uid="uid://cmfxb0d1drs4x" path="res://scripts/entities/star.gd" id="1"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_gyjrx"]
 
