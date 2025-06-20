@@ -40,7 +40,7 @@ func _ready() -> void:
         _open_random_star_system()
         Globals.first_load = false
     else:
-        _spawn_drone()
+        _spawn_all_drones()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
@@ -69,29 +69,38 @@ func _highlight_last_visited() -> void:
     if star and star.has_method("mark_as_last_visited"):
         star.mark_as_last_visited()
 
-func _spawn_drone() -> void:
+func _record_galaxy_drone_counts() -> void:
+    var counts: Dictionary = {}
+    for d in get_tree().get_nodes_in_group("galaxy_drone"):
+        if not ("belongs_to_star_seed" in d):
+            continue
+        var seed := d.belongs_to_star_seed
+        if not counts.has(seed):
+            counts[seed] = {}
+        var type_counts: Dictionary = counts[seed]
+        var t := Globals.GALAXY_DRONE_SCENE_PATH
+        type_counts[t] = type_counts.get(t, 0) + 1
+        counts[seed] = type_counts
+    Globals.star_drone_counts = counts
+
+func _spawn_all_drones() -> void:
     if drone_scene == null:
         return
 
-    var spawn_pos := Globals.galaxy_drone_position
-    if spawn_pos == Vector2.ZERO:
-        var star := _get_star_by_seed(Globals.start_star_seed)
-        if star != null:
-            spawn_pos = star.position
-
-    var count := Globals.returning_drone_count
-    if Globals.first_load and count == 0:
-        count = 1
-
-    for i in range(count):
-        var d: Node2D = drone_scene.instantiate()
-        add_child(d)
-        var pos := spawn_pos + Vector2(20, 0).rotated(rng.randf() * TAU)
-        d.position = pos
-        d.set("target_position", d.position)
-        if "belongs_to_star_seed" in d:
-            d.belongs_to_star_seed = Globals.start_star_seed
-    Globals.returning_drone_count = 0
+    for seed in Globals.star_drone_counts.keys():
+        var star := _get_star_by_seed(int(seed))
+        if star == null:
+            continue
+        var type_counts: Dictionary = Globals.star_drone_counts[seed]
+        var count := type_counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
+        for i in range(count):
+            var d: Node2D = drone_scene.instantiate()
+            add_child(d)
+            var pos := star.position + Vector2(20, 0).rotated(rng.randf() * TAU)
+            d.position = pos
+            d.set("target_position", d.position)
+            if "belongs_to_star_seed" in d:
+                d.belongs_to_star_seed = int(seed)
 
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()
@@ -117,11 +126,9 @@ func _open_last_star_system() -> void:
     _open_star_system(Globals.star_seed)
 
 func _open_star_system(seed_to_open: int) -> void:
-    var star := _get_star_by_seed(seed_to_open)
-    if star:
-        Globals.entering_drone_count = Globals.count_drones_near_star(star.global_position, seed_to_open)
-    else:
-        Globals.entering_drone_count = 0
+    _record_galaxy_drone_counts()
+    var counts := Globals.star_drone_counts.get(seed_to_open, {})
+    Globals.entering_drone_count = counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
     if Globals.first_load and Globals.entering_drone_count == 0:
         Globals.entering_drone_count = 1
     Globals.star_seed = seed_to_open

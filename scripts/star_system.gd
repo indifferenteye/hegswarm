@@ -159,10 +159,13 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
+        var count := 0
         if drone_manager:
-            Globals.returning_drone_count = drone_manager.get_drones().size()
-        else:
-            Globals.returning_drone_count = 0
+            count = drone_manager.get_drones().size()
+        Globals.returning_drone_count = count
+        var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
+        star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
+        Globals.star_drone_counts[Globals.star_seed] = star_counts
         get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
     elif event is InputEventMouseButton:
         if event.button_index == MOUSE_BUTTON_LEFT:
@@ -190,8 +193,11 @@ func _unhandled_input(event: InputEvent) -> void:
                         d.move_to(target)
 
 func _on_back_button_pressed() -> void:
+    var count := 0
     if drone_manager:
-        Globals.returning_drone_count = drone_manager.get_drones().size()
-    else:
-        Globals.returning_drone_count = 0
+        count = drone_manager.get_drones().size()
+    Globals.returning_drone_count = count
+    var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
+    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
+    Globals.star_drone_counts[Globals.star_seed] = star_counts
     get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
