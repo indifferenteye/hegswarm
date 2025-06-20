@@ -16,6 +16,7 @@ func _ready() -> void:
     var seeds := Globals.space_asteroid_seeds
     var belt_seed := Globals.space_belt_seed
     var key := str(Globals.star_seed) + "_" + str(belt_seed)
+    _apply_offline_progress(key)
     for i in range(positions.size()):
         var pos = positions[i]
         var asteroid: Node2D = asteroid_scene.instantiate()
@@ -33,13 +34,28 @@ func _ready() -> void:
     Globals.space_asteroid_seeds = []
 
     var drone_positions := Globals.space_drone_positions
-    for pos in drone_positions:
-        var d: Node2D = drone_scene.instantiate()
-        add_child(d)
-        d.position = pos * 10
-        d.scale *= 10
-        d.add_to_group("drone")
-    Globals.space_drone_positions = []
+    if drone_positions.size() > 0:
+        for pos in drone_positions:
+            var d: Node2D = drone_scene.instantiate()
+            add_child(d)
+            d.position = pos * 10
+            d.scale *= 10
+            d.add_to_group("drone")
+            d.set_meta("scene_path", drone_scene.resource_path)
+        Globals.space_drone_positions = []
+    else:
+        var counts: Dictionary = Globals.belt_drones.get(key, {})
+        for scene_path in counts.keys():
+            var scene := load(scene_path)
+            if scene == null:
+                continue
+            for i in range(int(counts[scene_path])):
+                var d: Node2D = scene.instantiate()
+                add_child(d)
+                d.position = Vector2.ZERO
+                d.scale *= 10
+                d.add_to_group("drone")
+                d.set_meta("scene_path", scene_path)
 
 func _draw() -> void:
     if selecting:
@@ -140,6 +156,7 @@ func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     Globals.belt_mining_percent[key] = clamp(mined, 0.0, 1.0)
 
 func _save_system_drone_positions() -> void:
+    _record_belt_state()
     var positions: Array = []
     for d in get_tree().get_nodes_in_group("drone"):
         positions.append(Globals.space_origin + d.position / 10)
@@ -156,3 +173,48 @@ func _apply_mining_to_asteroids(key: String) -> void:
         r.seed = int(asteroid.seed) + Globals.space_belt_seed + Globals.star_seed
         if r.randf() < percent:
             asteroid.queue_free()
+
+## Estimate asteroid mining progress that occurred while this belt was unloaded.
+func _apply_offline_progress(key: String) -> void:
+    var last_time := Globals.belt_last_loaded.get(key, 0)
+    var now := Time.get_unix_time_from_system()
+    if last_time == 0:
+        Globals.belt_last_loaded[key] = now
+        return
+    var counts: Dictionary = Globals.belt_drones.get(key, {})
+    if counts.is_empty():
+        Globals.belt_last_loaded[key] = now
+        return
+    var mined_total := 0.0
+    for scene_path in counts.keys():
+        var scene := load(scene_path)
+        if scene == null:
+            continue
+        var inst = scene.instantiate()
+        var rate := 0.0
+        if "mining_rate" in inst:
+            rate = inst.mining_rate
+        inst.free()
+        mined_total += float(counts[scene_path]) * rate * float(now - last_time)
+    var total := Globals.belt_asteroid_count.get(key, 1)
+    var percent := Globals.belt_mining_percent.get(key, 0.0)
+    percent += mined_total / float(total)
+    Globals.belt_mining_percent[key] = clamp(percent, 0.0, 1.0)
+    Globals.belt_last_loaded[key] = now
+
+## Save how many drones of each type are currently in this belt and when it was left.
+func _record_belt_state() -> void:
+    var belt_seed := Globals.space_belt_seed
+    if belt_seed == 0:
+        return
+    var key := str(Globals.star_seed) + "_" + str(belt_seed)
+    var counts: Dictionary = {}
+    for d in get_tree().get_nodes_in_group("drone"):
+        var path := ""
+        if d.has_meta("scene_path"):
+            path = str(d.get_meta("scene_path"))
+        else:
+            path = drone_scene.resource_path
+        counts[path] = counts.get(path, 0) + 1
+    Globals.belt_drones[key] = counts
+    Globals.belt_last_loaded[key] = Time.get_unix_time_from_system()
