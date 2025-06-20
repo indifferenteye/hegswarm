@@ -74,7 +74,7 @@ func _record_galaxy_drone_counts() -> void:
     for d in get_tree().get_nodes_in_group("galaxy_drone"):
         if not ("belongs_to_star_seed" in d):
             continue
-        var seed := d.belongs_to_star_seed
+        var seed = d.belongs_to_star_seed
         if not counts.has(seed):
             counts[seed] = {}
         var type_counts: Dictionary = counts[seed]
@@ -92,7 +92,7 @@ func _spawn_all_drones() -> void:
         if star == null:
             continue
         var type_counts: Dictionary = Globals.star_drone_counts[seed]
-        var count := type_counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
+        var count : int = type_counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
         for i in range(count):
             var d: Node2D = drone_scene.instantiate()
             add_child(d)
@@ -127,7 +127,7 @@ func _open_last_star_system() -> void:
 
 func _open_star_system(seed_to_open: int) -> void:
     _record_galaxy_drone_counts()
-    var counts := Globals.star_drone_counts.get(seed_to_open, {})
+    var counts = Globals.star_drone_counts.get(seed_to_open, {})
     Globals.entering_drone_count = counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
     if Globals.first_load and Globals.entering_drone_count == 0:
         Globals.entering_drone_count = 1

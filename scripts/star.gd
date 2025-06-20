@@ -17,7 +17,7 @@ func _update_star_counts() -> void:
     var counts: Dictionary = {}
     for d in get_tree().get_nodes_in_group("galaxy_drone"):
         if "belongs_to_star_seed" in d:
-            var s := d.belongs_to_star_seed
+            var s = d.belongs_to_star_seed
             if not counts.has(s):
                 counts[s] = {}
             var t_counts: Dictionary = counts[s]
@@ -29,8 +29,8 @@ func _update_star_counts() -> void:
 func _on_star_clicked(event: InputEvent) -> void:
     _update_star_counts()
     var drones := get_tree().get_nodes_in_group("galaxy_drone")
-    var counts := Globals.star_drone_counts.get(seed, {})
-    var near_count := counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
+    var counts  = Globals.star_drone_counts.get(seed, {})
+    var near_count : int = counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
     var first_near_drone: Node2D = null
     for d in drones:
         if "belongs_to_star_seed" in d and d.belongs_to_star_seed == seed:
