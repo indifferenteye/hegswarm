@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://b4rey3dsg2s6k"]
 
-[ext_resource type="Script" uid="uid://801241bqw0ur" path="res://scripts/sun.gd" id="1"]
+[ext_resource type="Script" uid="uid://801241bqw0ur" path="res://scripts/entities/sun.gd" id="1"]
 [ext_resource type="Shader" uid="uid://bf32l7t804k6v" path="res://assets/shaders/star.gdshader" id="2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sun"]

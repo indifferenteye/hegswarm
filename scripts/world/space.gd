@@ -3,10 +3,10 @@ extends Node2D
 const BeltManager = preload("res://scripts/utils/belt_manager.gd")
 const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 
-@export var asteroid_scene: PackedScene = preload("res://assets/space_asteroid.tscn")
-@export var drone_scene: PackedScene = preload("res://assets/space_drone.tscn")
-@export var processed_material_scene: PackedScene = preload("res://assets/processed_iron.tscn")
-@export var blueprint_scene: PackedScene = preload("res://assets/drone_blueprint.tscn")
+@export var asteroid_scene: PackedScene = preload("res://assets/celestials/space_asteroid.tscn")
+@export var drone_scene: PackedScene = preload("res://assets/drones/space_drone.tscn")
+@export var processed_material_scene: PackedScene = preload("res://assets/materials/processed_iron.tscn")
+@export var blueprint_scene: PackedScene = preload("res://assets/drones/drone_blueprint.tscn")
 
 var build_mode: String = ""
 var selected_drones: Array = []

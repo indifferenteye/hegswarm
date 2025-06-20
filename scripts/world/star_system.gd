@@ -1,20 +1,20 @@
 extends Node2D
 
 const StarSystemGenerator = preload('res://scripts/generators/star_system_generator.gd')
-const StarSystemDroneManager = preload('res://scripts/star_system_drone_manager.gd')
+const StarSystemDroneManager = preload('res://scripts/world/star_system_drone_manager.gd')
 const BeltManager = preload("res://scripts/utils/belt_manager.gd")
 const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 
 ## Scene used for the system's star.
-@export var sun_scene: PackedScene = preload('res://assets/sun.tscn')
+@export var sun_scene: PackedScene = preload('res://assets/celestials/sun.tscn')
 ## Scene used for planets orbiting the star.
-@export var planet_scene: PackedScene = preload('res://assets/planet.tscn')
+@export var planet_scene: PackedScene = preload('res://assets/celestials/planet.tscn')
 ## Scene used for asteroid belts that may appear instead of planets.
-@export var asteroid_belt_scene: PackedScene = preload('res://assets/asteroid_belt.tscn')
+@export var asteroid_belt_scene: PackedScene = preload('res://assets/celestials/asteroid_belt.tscn')
 ## Chance that an orbit will contain an asteroid belt instead of a planet.
 @export var asteroid_belt_chance: float = 0.2
 ## Scene used for the player's drone.
-@export var drone_scene: PackedScene = preload('res://assets/drone.tscn')
+@export var drone_scene: PackedScene = preload('res://assets/drones/drone.tscn')
 ## Minimum number of planets to generate.
 @export var min_planets: int = 1
 ## Maximum number of planets to generate.

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://ch4yve6u8nac5"]
 
-[ext_resource type="Script" uid="uid://36wvo8i8ey51" path="res://scripts/galaxy_drone.gd" id="1"]
+[ext_resource type="Script" uid="uid://36wvo8i8ey51" path="res://scripts/entities/galaxy_drone.gd" id="1"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 

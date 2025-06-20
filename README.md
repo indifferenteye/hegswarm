@@ -9,8 +9,19 @@ Hegswarm is a small project written in **Godot version 4**. The core idea is to 
 - **Exploration and Expansion**: Use new drones to scout distant systems, expanding your reach and discovering more materials.
 - **Resource Management**: Balance mined materials between expanding your swarm and powering existing structures.
 
-The project is in its early stages, so feel free to experiment with the world generation script in `scripts/world_generation.gd`.
+The project is in its early stages, so feel free to experiment with the world generation script in `scripts/world/world_generation.gd`.
 
 ## Development Notes
 
 This repository targets **Godot version 4**. Contributors should use GDScript 2.0 syntax and ensure that any scenes or scripts remain compatible with Godot 4's features.
+
+## Repository Layout
+
+- `assets/celestials` - Scene files for planets, stars, and other space objects.
+- `assets/drones` - Drone-related scenes and prefabs.
+- `assets/materials` - Scenes for resource items.
+- `assets/ui` - Camera and UI scenes.
+- `scripts/entities` - GDScript files attached to game entities.
+- `scripts/world` - World management and generation scripts.
+- `scripts/utils` - Reusable helper scripts.
+- `scripts/generators` - Procedural generation helpers.

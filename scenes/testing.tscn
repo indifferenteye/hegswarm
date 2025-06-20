@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bpv12a455fjao"]
 
-[ext_resource type="PackedScene" uid="uid://be4xg8et6uoia" path="res://assets/planet.tscn" id="2_l6grw"]
-[ext_resource type="PackedScene" uid="uid://bn0wywribwxc6" path="res://assets/main_camera.tscn" id="2_pcu7d"]
+[ext_resource type="PackedScene" uid="uid://be4xg8et6uoia" path="res://assets/celestials/planet.tscn" id="2_l6grw"]
+[ext_resource type="PackedScene" uid="uid://bn0wywribwxc6" path="res://assets/ui/main_camera.tscn" id="2_pcu7d"]
 
 [node name="Testing" type="Node2D"]
 

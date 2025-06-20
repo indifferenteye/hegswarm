@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://bey6hgn2q5xdd"]
 
-[ext_resource type="PackedScene" uid="uid://cwj81lysn86dj" path="res://assets/star.tscn" id="1_jxn3g"]
-[ext_resource type="Script" uid="uid://dmtkapt354yxv" path="res://scripts/world_generation.gd" id="2_mlxib"]
-[ext_resource type="PackedScene" uid="uid://bn0wywribwxc6" path="res://assets/main_camera.tscn" id="3_mlxib"]
+[ext_resource type="PackedScene" uid="uid://cwj81lysn86dj" path="res://assets/celestials/star.tscn" id="1_jxn3g"]
+[ext_resource type="Script" uid="uid://dmtkapt354yxv" path="res://scripts/world/world_generation.gd" id="2_mlxib"]
+[ext_resource type="PackedScene" uid="uid://bn0wywribwxc6" path="res://assets/ui/main_camera.tscn" id="3_mlxib"]
 
 [node name="Node2D" type="Node2D"]
 

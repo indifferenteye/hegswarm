@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://be4xg8et6uoia"]
 
-[ext_resource type="Script" uid="uid://byncmymj82ryi" path="res://scripts/planet.gd" id="1"]
+[ext_resource type="Script" uid="uid://byncmymj82ryi" path="res://scripts/entities/planet.gd" id="1"]
 [ext_resource type="Shader" uid="uid://cq4xbabcv0enx" path="res://assets/shaders/planet.gdshader" id="2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_planet"]
@@ -8,13 +8,15 @@ shader = ExtResource("2")
 shader_parameter/seed = 0.0
 shader_parameter/water = 0.5
 shader_parameter/plants = 0.5
-shader_parameter/grid_size = 50.0
+shader_parameter/grid_size = 20.0
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
 [node name="Planet" type="Node2D"]
-scale = Vector2(8, 7.88)
+scale = Vector2(10, 10)
 script = ExtResource("1")
+water = 0.21
+plants = 0.823
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_planet")
