@@ -20,7 +20,14 @@ func _ready() -> void:
     var seeds := Globals.space_asteroid_seeds
     var belt_seed := Globals.space_belt_seed
     var key := str(Globals.star_seed) + "_" + str(belt_seed)
-    BeltManager.apply_offline_progress(key)
+
+    if material_cluster_scene:
+        var cluster := material_cluster_scene.instantiate()
+        add_child(cluster)
+        cluster.position = Vector2.ZERO
+        cluster.scale *= 10
+
+    BeltManager.apply_offline_progress(self, material_cluster_scene, key)
     for i in range(positions.size()):
         var pos = positions[i]
         var asteroid: Node2D = asteroid_scene.instantiate()
@@ -61,11 +68,6 @@ func _ready() -> void:
                 d.add_to_group("drone")
                 d.set_meta("scene_path", scene_path)
 
-    if material_cluster_scene:
-        var cluster: Node2D = material_cluster_scene.instantiate()
-        add_child(cluster)
-        cluster.position = Vector2.ZERO
-        cluster.scale *= 10
 
 func _draw() -> void:
     if selecting:
@@ -132,13 +134,8 @@ func _on_drone_button_pressed() -> void:
 
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
-    if processed_material_scene == null:
-        return
-    var iron: Node2D = processed_material_scene.instantiate()
-    add_child(iron)
-    iron.global_position = global_pos
-    iron.scale *= 10
-    iron.add_to_group("processed_material")
+    if material_cluster_scene:
+        BeltManager.add_material_to_clusters(self, material_cluster_scene, "iron", 1)
     var belt_seed := 0
     if "belt_seed" in asteroid:
         belt_seed = asteroid.belt_seed
