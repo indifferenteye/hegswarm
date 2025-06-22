@@ -6,6 +6,7 @@ extends Node2D
 @export var mining_rate: float = 1.0
 ## Minimum distance this drone tries to keep from other drones.
 @export var separation_distance: float = 30.0
+@export var cluster_scene: PackedScene
 
 var asteroid_target: Node2D = null
 var manual_destination: Vector2
@@ -81,7 +82,15 @@ func _deliver_to_cluster(delta: float) -> bool:
     if carried_material == null:
         return false
     if cluster_target == null or not is_instance_valid(cluster_target):
-        cluster_target = _get_nearest_cluster()
+        cluster_target = _get_cluster_with_room()
+        if cluster_target == null:
+            cluster_target = _create_cluster()
+    else:
+        if "stored_amount" in cluster_target and "capacity" in cluster_target:
+            if cluster_target.stored_amount >= cluster_target.capacity:
+                cluster_target = _get_cluster_with_room()
+                if cluster_target == null:
+                    cluster_target = _create_cluster()
     if cluster_target == null:
         return true
     var dist := position.distance_to(cluster_target.global_position)
@@ -116,9 +125,13 @@ func _take_from_cluster(delta: float) -> bool:
 
 func _collect_material(delta: float) -> bool:
     var iron := _get_nearest_material()
-    var cluster := _get_nearest_cluster()
-    if iron == null or cluster == null:
+    if iron == null:
         return false
+    var cluster := _get_cluster_with_room()
+    if cluster == null:
+        cluster = _create_cluster()
+        if cluster == null:
+            return false
     var dist := position.distance_to(iron.global_position)
     if dist > mining_range:
         var dir := (iron.global_position - position).normalized()
@@ -183,3 +196,19 @@ func _get_nearest_cluster() -> Node2D:
             closest_distance = distance
             closest = c
     return closest
+
+func _get_cluster_with_room() -> Node2D:
+    for c in get_tree().get_nodes_in_group("material_cluster"):
+        if "stored_amount" in c and "capacity" in c:
+            if c.stored_amount < c.capacity:
+                return c
+    return null
+
+func _create_cluster() -> Node2D:
+    if cluster_scene == null:
+        return null
+    var cluster := cluster_scene.instantiate()
+    get_parent().add_child(cluster)
+    cluster.position = Vector2.ZERO
+    cluster.scale *= 10
+    return cluster
