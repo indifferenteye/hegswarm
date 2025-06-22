@@ -19,7 +19,7 @@ func _ready() -> void:
     var seeds := Globals.space_asteroid_seeds
     var belt_seed := Globals.space_belt_seed
     var key := str(Globals.star_seed) + "_" + str(belt_seed)
-    BeltManager.apply_offline_progress(key)
+    BeltManager.apply_offline_progress(self, null, key)
     for i in range(positions.size()):
         var pos = positions[i]
         var asteroid: Node2D = asteroid_scene.instantiate()
