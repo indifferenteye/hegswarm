@@ -15,6 +15,14 @@ var carried_material = null
 var blueprint_target: Node2D = null
 var cluster_target: Node2D = null
 var deliver_to_cluster: bool = false
+var path_line: Node2D
+
+func _ready() -> void:
+    path_line = preload("res://scripts/utils/path_line.gd").new()
+    path_line.set_as_top_level(true)
+    path_line.visible = false
+    if get_parent():
+        get_parent().add_child(path_line)
 
 ## Push away from nearby drones to avoid clumping.
 func _apply_separation_force(delta: float) -> void:
@@ -31,6 +39,10 @@ func _apply_separation_force(delta: float) -> void:
 func move_to(pos: Vector2) -> void:
     manual_destination = pos
     manual_destination_active = true
+    if path_line:
+        path_line.start_pos = global_position
+        path_line.end_pos = pos
+        path_line.visible = true
 
 func _process(delta: float) -> void:
     _apply_separation_force(delta)
@@ -56,8 +68,12 @@ func _handle_manual_move(delta: float) -> bool:
     if dist > 5.0:
         var dir := (manual_destination - position).normalized()
         position += dir * move_speed * delta
+        if path_line:
+            path_line.start_pos = global_position
     else:
         manual_destination_active = false
+        if path_line:
+            path_line.visible = false
     return true
 
 func _deliver_material(delta: float) -> bool:
