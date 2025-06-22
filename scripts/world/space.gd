@@ -136,8 +136,13 @@ func _on_drone_button_pressed() -> void:
 
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
-    if material_cluster_scene:
-        BeltManager.add_material_to_clusters(self, material_cluster_scene, "iron", 1)
+    if processed_material_scene == null:
+        return
+    var iron: Node2D = processed_material_scene.instantiate()
+    add_child(iron)
+    iron.global_position = global_pos
+    iron.scale *= 10
+    iron.add_to_group("processed_material")
     var belt_seed := 0
     if "belt_seed" in asteroid:
         belt_seed = asteroid.belt_seed
