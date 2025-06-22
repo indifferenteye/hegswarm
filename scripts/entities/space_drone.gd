@@ -225,6 +225,6 @@ func _create_cluster() -> Node2D:
         return null
     var cluster := cluster_scene.instantiate()
     get_parent().add_child(cluster)
-    cluster.position = Vector2.ZERO
+    cluster.position = position
     cluster.scale *= 10
     return cluster

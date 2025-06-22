@@ -158,4 +158,3 @@ func _save_system_drone_positions() -> void:
     for d in get_tree().get_nodes_in_group("drone"):
         positions.append(Globals.space_origin + d.position / 10)
     Globals.system_drone_positions = positions
-
