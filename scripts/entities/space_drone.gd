@@ -12,6 +12,8 @@ var manual_destination: Vector2
 var manual_destination_active: bool = false
 var carried_material = null
 var blueprint_target: Node2D = null
+var cluster_target: Node2D = null
+var deliver_to_cluster: bool = false
 
 ## Push away from nearby drones to avoid clumping.
 func _apply_separation_force(delta: float) -> void:
@@ -33,7 +35,14 @@ func _process(delta: float) -> void:
     _apply_separation_force(delta)
     if _handle_manual_move(delta):
         return
-    if _deliver_material(delta):
+    if carried_material != null:
+        if deliver_to_cluster:
+            if _deliver_to_cluster(delta):
+                return
+        else:
+            if _deliver_material(delta):
+                return
+    if _take_from_cluster(delta):
         return
     if _collect_material(delta):
         return
@@ -68,10 +77,47 @@ func _deliver_material(delta: float) -> bool:
         blueprint_target = null
     return true
 
+func _deliver_to_cluster(delta: float) -> bool:
+    if carried_material == null:
+        return false
+    if cluster_target == null or not is_instance_valid(cluster_target):
+        cluster_target = _get_nearest_cluster()
+    if cluster_target == null:
+        return true
+    var dist := position.distance_to(cluster_target.global_position)
+    if dist > mining_range:
+        var dir := (cluster_target.global_position - position).normalized()
+        position += dir * move_speed * delta
+    else:
+        if cluster_target.has_method("add_material"):
+            if cluster_target.add_material(carried_material["material_type"]):
+                carried_material = null
+                deliver_to_cluster = false
+                cluster_target = null
+    return true
+
+func _take_from_cluster(delta: float) -> bool:
+    var cluster := _get_nearest_cluster()
+    var blueprint := _get_nearest_blueprint()
+    if cluster == null or blueprint == null:
+        return false
+    if not blueprint.has_method("needs_material") or not blueprint.needs_material(cluster.material_type):
+        return false
+    var dist := position.distance_to(cluster.global_position)
+    if dist > mining_range:
+        var dir := (cluster.global_position - position).normalized()
+        position += dir * move_speed * delta
+    else:
+        if cluster.has_method("take_material") and cluster.take_material():
+            carried_material = {"material_type": cluster.material_type}
+            blueprint_target = blueprint
+            deliver_to_cluster = false
+    return true
+
 func _collect_material(delta: float) -> bool:
     var iron := _get_nearest_material()
-    var blueprint := _get_nearest_blueprint()
-    if iron == null or blueprint == null:
+    var cluster := _get_nearest_cluster()
+    if iron == null or cluster == null:
         return false
     var dist := position.distance_to(iron.global_position)
     if dist > mining_range:
@@ -79,6 +125,8 @@ func _collect_material(delta: float) -> bool:
         position += dir * move_speed * delta
     else:
         carried_material = {"material_type": iron.material_type}
+        deliver_to_cluster = true
+        cluster_target = cluster
         iron.queue_free()
     return true
 
@@ -124,4 +172,14 @@ func _get_nearest_blueprint() -> Node2D:
         if distance < closest_distance:
             closest_distance = distance
             closest = bp
+    return closest
+
+func _get_nearest_cluster() -> Node2D:
+    var closest
+    var closest_distance := detection_range
+    for c in get_tree().get_nodes_in_group("material_cluster"):
+        var distance := position.distance_to(c.global_position)
+        if distance < closest_distance:
+            closest_distance = distance
+            closest = c
     return closest
