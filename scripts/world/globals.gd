@@ -45,6 +45,12 @@ var space_belt_seed: int = 0
 var belt_drones: Dictionary = {}
 ## Timestamp of the last time each belt was loaded.
 var belt_last_loaded: Dictionary = {}
+## Amount of iron stored in material clusters for each belt.
+var belt_cluster_iron: Dictionary = {}
+## Number of unfinished blueprints for each belt.
+var belt_blueprint_counts: Dictionary = {}
+## Total iron still required to finish all blueprints for each belt.
+var belt_blueprint_iron_needed: Dictionary = {}
 
 ## Counts how many drones belonging to a particular star are near the given
 ## position.
