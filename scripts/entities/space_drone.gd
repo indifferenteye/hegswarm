@@ -24,6 +24,16 @@ func _ready() -> void:
     if get_parent():
         get_parent().add_child(path_line)
 
+func _show_path_line_to(pos: Vector2) -> void:
+    if path_line:
+        path_line.start_pos = global_position
+        path_line.end_pos = pos
+        path_line.visible = true
+
+func _hide_path_line() -> void:
+    if path_line:
+        path_line.visible = false
+
 ## Push away from nearby drones to avoid clumping.
 func _apply_separation_force(delta: float) -> void:
     var push := Vector2.ZERO
@@ -46,6 +56,8 @@ func move_to(pos: Vector2) -> void:
 
 func _process(delta: float) -> void:
     _apply_separation_force(delta)
+    if path_line and path_line.visible:
+        path_line.start_pos = global_position
     if _handle_manual_move(delta):
         return
     if carried_material != null:
@@ -82,16 +94,19 @@ func _deliver_material(delta: float) -> bool:
     if blueprint_target == null or not is_instance_valid(blueprint_target):
         blueprint_target = _get_nearest_blueprint()
     if blueprint_target == null:
+        _hide_path_line()
         return true
     var dist := position.distance_to(blueprint_target.global_position)
     if dist > mining_range:
         var dir := (blueprint_target.global_position - position).normalized()
         position += dir * move_speed * delta
+        _show_path_line_to(blueprint_target.global_position)
     else:
         if blueprint_target.has_method("add_material"):
             blueprint_target.add_material(carried_material["material_type"])
         carried_material = null
         blueprint_target = null
+        _hide_path_line()
     return true
 
 func _deliver_to_cluster(delta: float) -> bool:
@@ -108,71 +123,84 @@ func _deliver_to_cluster(delta: float) -> bool:
                 if cluster_target == null:
                     cluster_target = _create_cluster()
     if cluster_target == null:
+        _hide_path_line()
         return true
     var dist := position.distance_to(cluster_target.global_position)
     if dist > mining_range:
         var dir := (cluster_target.global_position - position).normalized()
         position += dir * move_speed * delta
+        _show_path_line_to(cluster_target.global_position)
     else:
         if cluster_target.has_method("add_material"):
             if cluster_target.add_material(carried_material["material_type"]):
                 carried_material = null
                 deliver_to_cluster = false
                 cluster_target = null
+        _hide_path_line()
     return true
 
 func _take_from_cluster(delta: float) -> bool:
     var cluster := _get_nearest_cluster()
     var blueprint := _get_nearest_blueprint()
     if cluster == null or blueprint == null:
+        _hide_path_line()
         return false
     if not blueprint.has_method("needs_material") or not blueprint.needs_material(cluster.material_type):
+        _hide_path_line()
         return false
     var dist := position.distance_to(cluster.global_position)
     if dist > mining_range:
         var dir := (cluster.global_position - position).normalized()
         position += dir * move_speed * delta
+        _show_path_line_to(cluster.global_position)
     else:
         if cluster.has_method("take_material") and cluster.take_material():
             carried_material = {"material_type": cluster.material_type}
             blueprint_target = blueprint
             deliver_to_cluster = false
+        _hide_path_line()
     return true
 
 func _collect_material(delta: float) -> bool:
     var iron := _get_nearest_material()
     if iron == null:
+        _hide_path_line()
         return false
     var cluster := _get_cluster_with_room()
     if cluster == null:
         cluster = _create_cluster()
         if cluster == null:
+            _hide_path_line()
             return false
     var dist := position.distance_to(iron.global_position)
     if dist > mining_range:
         var dir := (iron.global_position - position).normalized()
         position += dir * move_speed * delta
+        _show_path_line_to(iron.global_position)
     else:
         carried_material = {"material_type": iron.material_type}
         deliver_to_cluster = true
         cluster_target = cluster
         iron.queue_free()
+        _hide_path_line()
     return true
 
 func _mine_or_move_asteroid(delta: float) -> void:
     if asteroid_target == null or not is_instance_valid(asteroid_target):
         asteroid_target = _get_nearest_asteroid()
     if asteroid_target == null:
+        _hide_path_line()
         return
     var dist := position.distance_to(asteroid_target.global_position)
     if dist > mining_range:
         var dir := (asteroid_target.global_position - position).normalized()
         position += dir * move_speed * delta
+        _show_path_line_to(asteroid_target.global_position)
     elif asteroid_target.has_method("mine"):
         asteroid_target.mine(mining_rate * delta)
         if not is_instance_valid(asteroid_target):
             asteroid_target = null
-
+        _hide_path_line()
 func _get_nearest_asteroid() -> Node2D:
     var closest
     var closest_distance := detection_range
