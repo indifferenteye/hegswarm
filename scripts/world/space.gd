@@ -7,6 +7,7 @@ const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 @export var drone_scene: PackedScene = preload("res://assets/drones/space_drone.tscn")
 @export var processed_material_scene: PackedScene = preload("res://assets/materials/processed_iron.tscn")
 @export var blueprint_scene: PackedScene = preload("res://assets/drones/drone_blueprint.tscn")
+@export var material_cluster_scene: PackedScene = preload("res://assets/materials/material_cluster.tscn")
 
 var build_mode: String = ""
 var selected_drones: Array = []
@@ -59,6 +60,12 @@ func _ready() -> void:
                 d.scale *= 10
                 d.add_to_group("drone")
                 d.set_meta("scene_path", scene_path)
+
+    if material_cluster_scene:
+        var cluster: Node2D = material_cluster_scene.instantiate()
+        add_child(cluster)
+        cluster.position = Vector2.ZERO
+        cluster.scale *= 10
 
 func _draw() -> void:
     if selecting:

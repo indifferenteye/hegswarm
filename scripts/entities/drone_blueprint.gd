@@ -11,6 +11,9 @@ func _ready() -> void:
     add_to_group("drone_blueprint")
     queue_redraw()
 
+func needs_material(material_type: String) -> bool:
+    return current_materials.get(material_type, 0) < required_materials.get(material_type, 0)
+
 func add_material(material_type: String) -> void:
     var current = current_materials.get(material_type, 0)
     current += 1
