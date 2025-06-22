@@ -4,6 +4,7 @@ extends Node2D
 ## and the value is the amount needed.
 @export var required_materials: Dictionary = {"iron": 5}
 @export var drone_scene: PackedScene = preload("res://assets/drones/space_drone.tscn")
+@export var cluster_scene: PackedScene
 
 var current_materials: Dictionary = {}
 
@@ -35,6 +36,8 @@ func _spawn_drone() -> void:
     d.global_position = global_position
     d.scale *= 10
     d.add_to_group("drone")
+    if "cluster_scene" in d:
+        d.cluster_scene = cluster_scene
     queue_free()
 
 func _draw() -> void:

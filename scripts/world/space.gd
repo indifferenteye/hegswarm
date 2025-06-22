@@ -21,11 +21,7 @@ func _ready() -> void:
     var belt_seed := Globals.space_belt_seed
     var key := str(Globals.star_seed) + "_" + str(belt_seed)
 
-    if material_cluster_scene:
-        var cluster := material_cluster_scene.instantiate()
-        add_child(cluster)
-        cluster.position = Vector2.ZERO
-        cluster.scale *= 10
+
 
     BeltManager.apply_offline_progress(self, material_cluster_scene, key)
     for i in range(positions.size()):
@@ -53,6 +49,8 @@ func _ready() -> void:
             d.scale *= 10
             d.add_to_group("drone")
             d.set_meta("scene_path", drone_scene.resource_path)
+            if "cluster_scene" in d:
+                d.cluster_scene = material_cluster_scene
         Globals.space_drone_positions = []
     else:
         var counts: Dictionary = Globals.belt_drones.get(key, {})
@@ -67,6 +65,8 @@ func _ready() -> void:
                 d.scale *= 10
                 d.add_to_group("drone")
                 d.set_meta("scene_path", scene_path)
+                if "cluster_scene" in d:
+                    d.cluster_scene = material_cluster_scene
 
 
 func _draw() -> void:
@@ -90,6 +90,8 @@ func _unhandled_input(event: InputEvent) -> void:
                     add_child(bp)
                     bp.global_position = get_global_mouse_position()
                     bp.scale *= 10
+                    if "cluster_scene" in bp:
+                        bp.cluster_scene = material_cluster_scene
                 return
             elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
                 build_mode = ""
