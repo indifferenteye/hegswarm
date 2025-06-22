@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://bmfi5u1v2ao12"]
+
+[ext_resource type="Script" path="res://scripts/star.gd" id="1"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_gyjrx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3t53c"]
+
+[node name="star" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2.38419e-07, 2.38419e-07)
+scale = Vector2(16.171, -15.7189)
+texture = SubResource("CanvasTexture_gyjrx")
+offset = Vector2(-2.98023e-08, 0)
+
+[node name="Area2D" type="Area2D" parent="."]
+scale = Vector2(5.05235, 6.29725)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(0.221707, 0.184127)
+shape = SubResource("CircleShape2D_3t53c")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]

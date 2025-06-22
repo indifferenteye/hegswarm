@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://8a6oxu6cdlhu"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
+
+[node name="Drone" type="Node2D"]
+scale = Vector2(8, 7.88)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.96826, -0.642853)
+texture = SubResource("CanvasTexture_planet")
