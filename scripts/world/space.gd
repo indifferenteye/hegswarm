@@ -41,32 +41,33 @@ func _ready() -> void:
     Globals.space_asteroid_seeds = []
 
     var drone_positions := Globals.space_drone_positions
-    if drone_positions.size() > 0:
-        for pos in drone_positions:
-            var d: Node2D = drone_scene.instantiate()
+    var counts: Dictionary = Globals.belt_drones.get(key, {})
+    for scene_path in counts.keys():
+        var scene := load(scene_path)
+        if scene == null:
+            continue
+        for i in range(int(counts[scene_path])):
+            var d: Node2D = scene.instantiate()
             add_child(d)
-            d.position = pos * 10
+            var pos := Vector2.ZERO
+            if drone_positions.size() > 0:
+                pos = drone_positions.pop_front() * 10
+            d.position = pos
             d.scale *= 10
             d.add_to_group("drone")
-            d.set_meta("scene_path", drone_scene.resource_path)
+            d.set_meta("scene_path", scene_path)
             if "cluster_scene" in d:
                 d.cluster_scene = material_cluster_scene
-        Globals.space_drone_positions = []
-    else:
-        var counts: Dictionary = Globals.belt_drones.get(key, {})
-        for scene_path in counts.keys():
-            var scene := load(scene_path)
-            if scene == null:
-                continue
-            for i in range(int(counts[scene_path])):
-                var d: Node2D = scene.instantiate()
-                add_child(d)
-                d.position = Vector2.ZERO
-                d.scale *= 10
-                d.add_to_group("drone")
-                d.set_meta("scene_path", scene_path)
-                if "cluster_scene" in d:
-                    d.cluster_scene = material_cluster_scene
+    for pos in drone_positions:
+        var d: Node2D = drone_scene.instantiate()
+        add_child(d)
+        d.position = pos * 10
+        d.scale *= 10
+        d.add_to_group("drone")
+        d.set_meta("scene_path", drone_scene.resource_path)
+        if "cluster_scene" in d:
+            d.cluster_scene = material_cluster_scene
+    Globals.space_drone_positions = []
 
 
 func _draw() -> void:
