@@ -65,14 +65,14 @@ static func apply_offline_progress(owner: Node, cluster_scene: PackedScene, key:
         Globals.belt_mining_percent[key] = clamp(percent, 0.0, 1.0)
 
     var mined_materials := int(mined_total)
-    var cluster_materials := Globals.belt_cluster_iron.get(key, 0)
-    var blueprint_count := Globals.belt_blueprint_counts.get(key, 0)
-    var blueprint_needed := Globals.belt_blueprint_iron_needed.get(key, blueprint_count * 5)
+    var cluster_materials = Globals.belt_cluster_iron.get(key, 0)
+    var blueprint_count = Globals.belt_blueprint_counts.get(key, 0)
+    var blueprint_needed = Globals.belt_blueprint_iron_needed.get(key, blueprint_count * 5)
 
-    var available := mined_materials + cluster_materials
-    var deliverable := min(available, int(float(now - last_time) / transport_time_per_material))
-    var built := min(blueprint_count, int(deliverable / 5))
-    built = min(built, int(blueprint_needed / 5))
+    var available = mined_materials + cluster_materials
+    var deliverable = min(available, int(float(now - last_time) / transport_time_per_material))
+    var built = min(blueprint_count, int(deliverable))
+    built = min(built, int(blueprint_needed))
 
     if built > 0:
         var drone_path := preload("res://assets/drones/space_drone.tscn").resource_path
