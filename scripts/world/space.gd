@@ -15,9 +15,13 @@ var selected_drones: Array = []
 var selecting: bool = false
 var select_start: Vector2
 var select_rect: Rect2 = Rect2()
+var unload_button: Button
 
 func _ready() -> void:
     blueprint_drone_scene = drone_scene
+    if has_node("UI/BottomPanel/UnloadButton"):
+        unload_button = get_node("UI/BottomPanel/UnloadButton")
+        unload_button.visible = false
     var positions := Globals.space_asteroid_positions
     var seeds := Globals.space_asteroid_seeds
     var belt_seed := Globals.space_belt_seed
@@ -119,13 +123,18 @@ func _unhandled_input(event: InputEvent) -> void:
                 SelectionUtils.apply_selection(self, rect, selected_drones)
                 select_rect = Rect2()
                 queue_redraw()
+                _update_unload_button()
         elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-            var target := get_global_mouse_position()
+            var click_pos := get_global_mouse_position()
             if selected_drones.is_empty():
                 return
+            var target_drone := _get_drone_at_pos(click_pos)
             for d in selected_drones:
                 if d.has_method("move_to"):
-                    d.move_to(target)
+                    if target_drone:
+                        d.move_to(target_drone)
+                    else:
+                        d.move_to(click_pos)
 
 func _on_back_button_pressed() -> void:
     _save_system_drone_positions()
@@ -143,6 +152,29 @@ func _on_drone_button_pressed() -> void:
 func _on_carrier_button_pressed() -> void:
     build_mode = "drone"
     blueprint_drone_scene = preload("res://assets/drones/carrier_drone.tscn")
+
+func _on_unload_button_pressed() -> void:
+    if selected_drones.is_empty():
+        return
+    for d in selected_drones:
+        if d.has_method("unload_drones"):
+            d.unload_drones()
+    _update_unload_button()
+
+func _update_unload_button() -> void:
+    if unload_button == null:
+        return
+    for d in selected_drones:
+        if "storage_capacity" in d and d.storage_capacity > 0.0:
+            unload_button.visible = true
+            return
+    unload_button.visible = false
+
+func _get_drone_at_pos(pos: Vector2) -> Node2D:
+    for d in get_tree().get_nodes_in_group("drone"):
+        if d.global_position.distance_to(pos) <= 30.0:
+            return d
+    return null
 
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:

@@ -13,6 +13,8 @@ mining_range = 120.0
 mining_rate = 2225.0
 separation_distance = 100.0
 storeable_amount = 5
+storage_capacity = 5.0
+cargo_space = 1.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1.96826, -0.642853)
