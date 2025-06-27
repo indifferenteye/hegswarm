@@ -164,7 +164,13 @@ func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
 
 func _save_system_drone_positions() -> void:
     BeltManager.record_belt_state(self, drone_scene)
-    var positions: Array = []
+    var data: Array = []
     for d in get_tree().get_nodes_in_group("drone"):
-        positions.append(Globals.space_origin + d.position / 10)
-    Globals.system_drone_positions = positions
+        var entry: Dictionary = {}
+        entry["pos"] = Globals.space_origin + d.position / 10
+        var path := drone_scene.resource_path
+        if d.has_meta("scene_path"):
+            path = str(d.get_meta("scene_path"))
+        entry["scene_path"] = path
+        data.append(entry)
+    Globals.system_drone_positions = data

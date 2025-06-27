@@ -63,11 +63,21 @@ func _spawn_drones() -> void:
     path_lines.clear()
 
     if Globals.system_drone_positions.size() > 0:
-        for pos in Globals.system_drone_positions:
-            var d: Node2D = drone_scene.instantiate()
+        for entry in Globals.system_drone_positions:
+            var pos := Vector2.ZERO
+            var path := drone_scene.resource_path
+            if entry is Dictionary:
+                pos = entry.get("pos", Vector2.ZERO)
+                path = str(entry.get("scene_path", path))
+            else:
+                pos = entry
+            var scene := load(path)
+            if scene == null:
+                scene = drone_scene
+            var d: Node2D = scene.instantiate()
             add_child(d)
             d.add_to_group("drone")
-            d.set_meta("scene_path", drone_scene.resource_path)
+            d.set_meta("scene_path", path)
             d.position = pos
             drones.append(d)
             drone_targets.append(d.position)

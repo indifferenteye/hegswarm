@@ -14,7 +14,7 @@ const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 ## Chance that an orbit will contain an asteroid belt instead of a planet.
 @export var asteroid_belt_chance: float = 0.2
 ## Scene used for the player's drone.
-@export var drone_scene: PackedScene = preload('res://assets/drones/drone.tscn')
+@export var drone_scene: PackedScene = preload('res://assets/drones/carrier_drone.tscn')
 ## Minimum number of planets to generate.
 @export var min_planets: int = 1
 ## Maximum number of planets to generate.
