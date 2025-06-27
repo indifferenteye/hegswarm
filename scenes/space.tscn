@@ -29,6 +29,14 @@ offset_right = -10.0
 offset_bottom = 30.0
 text = "Drone"
 
+[node name="CarrierButton" type="Button" parent="UI/BuildPanel"]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 40.0
+offset_right = -10.0
+offset_bottom = 70.0
+text = "Carrier"
+
 [node name="BottomPanel" type="Panel" parent="UI"]
 anchors_preset = 12
 anchor_top = 1.0
@@ -49,4 +57,5 @@ text = "Back to System"
 
 [connection signal="pressed" from="UI/BuildToggle" to="." method="_on_build_toggle_pressed"]
 [connection signal="pressed" from="UI/BuildPanel/DroneButton" to="." method="_on_drone_button_pressed"]
+[connection signal="pressed" from="UI/BuildPanel/CarrierButton" to="." method="_on_carrier_button_pressed"]
 [connection signal="pressed" from="UI/BottomPanel/BackButton" to="." method="_on_back_button_pressed"]

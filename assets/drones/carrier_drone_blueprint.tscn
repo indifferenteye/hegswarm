@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/drone_blueprint.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/drones/carrier_drone.tscn" id="2"]
+
+[node name="DroneBlueprint" type="Node2D"]
+script = ExtResource("1")
+drone_scene = ExtResource("2")
