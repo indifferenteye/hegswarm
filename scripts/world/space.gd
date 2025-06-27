@@ -10,12 +10,14 @@ const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 @export var material_cluster_scene: PackedScene = preload("res://assets/materials/material_cluster.tscn")
 
 var build_mode: String = ""
+var blueprint_drone_scene: PackedScene
 var selected_drones: Array = []
 var selecting: bool = false
 var select_start: Vector2
 var select_rect: Rect2 = Rect2()
 
 func _ready() -> void:
+    blueprint_drone_scene = drone_scene
     var positions := Globals.space_asteroid_positions
     var seeds := Globals.space_asteroid_seeds
     var belt_seed := Globals.space_belt_seed
@@ -93,6 +95,8 @@ func _unhandled_input(event: InputEvent) -> void:
                     bp.scale *= 10
                     if "cluster_scene" in bp:
                         bp.cluster_scene = material_cluster_scene
+                    if "drone_scene" in bp and blueprint_drone_scene:
+                        bp.drone_scene = blueprint_drone_scene
                 return
             elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
                 build_mode = ""
@@ -134,6 +138,11 @@ func _on_build_toggle_pressed() -> void:
 
 func _on_drone_button_pressed() -> void:
     build_mode = "drone"
+    blueprint_drone_scene = drone_scene
+
+func _on_carrier_button_pressed() -> void:
+    build_mode = "drone"
+    blueprint_drone_scene = preload("res://assets/drones/carrier_drone.tscn")
 
 
 func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:

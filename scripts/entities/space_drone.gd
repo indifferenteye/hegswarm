@@ -7,6 +7,11 @@ extends Node2D
 ## Minimum distance this drone tries to keep from other drones.
 @export var separation_distance: float = 30.0
 @export var cluster_scene: PackedScene
+## Maximum number of other drones this drone can store.
+@export var storeable_amount: int = 0
+
+## Paths of drones currently stored inside this drone.
+var stored_drones: Array[String] = []
 
 var asteroid_target: Node2D = null
 var manual_destination: Vector2
@@ -256,3 +261,42 @@ func _create_cluster() -> Node2D:
     cluster.position = position
     cluster.scale *= 10
     return cluster
+
+## Store another drone inside this drone if there is capacity.
+func store_drone(drone: Node2D) -> bool:
+    if storeable_amount <= 0:
+        return false
+    if stored_drones.size() >= storeable_amount:
+        return false
+    if not drone:
+        return false
+    var path := ""
+    if drone.has_meta("scene_path"):
+        path = str(drone.get_meta("scene_path"))
+    else:
+        if drone.scene_file_path != "":
+            path = drone.scene_file_path
+    stored_drones.append(path)
+    drone.queue_free()
+    return true
+
+## Unload all stored drones at this drone's position.
+func unload_drones() -> void:
+    if storeable_amount <= 0:
+        return
+    if stored_drones.is_empty():
+        return
+    for path in stored_drones:
+        var scene := load(path)
+        if scene == null:
+            continue
+        var d: Node2D = scene.instantiate()
+        if get_parent():
+            get_parent().add_child(d)
+        d.global_position = global_position + Vector2(randf_range(-20, 20), randf_range(-20, 20))
+        d.scale *= 10
+        d.add_to_group("drone")
+        d.set_meta("scene_path", path)
+        if "cluster_scene" in d:
+            d.cluster_scene = cluster_scene
+    stored_drones.clear()

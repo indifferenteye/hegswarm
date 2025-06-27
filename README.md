@@ -8,6 +8,7 @@ Hegswarm is a small project written in **Godot version 4**. The core idea is to 
 - **Automation**: Build factories and additional drones to automate resource gathering and production.
 - **Exploration and Expansion**: Use new drones to scout distant systems, expanding your reach and discovering more materials.
 - **Resource Management**: Balance mined materials between expanding your swarm and powering existing structures.
+- **Carrier Drones**: Specialized drones that can store and unload other drones for rapid transportation.
 
 The project is in its early stages, so feel free to experiment with the world generation script in `scripts/world/world_generation.gd`.
 
