@@ -9,9 +9,19 @@ extends Node2D
 @export var cluster_scene: PackedScene
 ## Maximum number of other drones this drone can store.
 @export var storeable_amount: int = 0
+## Total storage capacity of this drone. Defaults to storeable_amount for
+## backwards compatibility.
+@export var storage_capacity: float = 0.0
+## Amount of storage space this drone occupies when carried by a carrier.
+@export var cargo_space: float = 1.0
+
+## Amount of storage space currently used by stored drones.
+var current_storage: float = 0.0
 
 ## Paths of drones currently stored inside this drone.
-var stored_drones: Array[String] = []
+## Information about drones stored inside this drone. Each entry is a Dictionary
+## with keys `path` and `space`.
+var stored_drones: Array = []
 
 var asteroid_target: Node2D = null
 var manual_destination: Vector2
@@ -28,6 +38,8 @@ func _ready() -> void:
     path_line.visible = false
     if get_parent():
         get_parent().add_child(path_line)
+    if storage_capacity <= 0.0 and storeable_amount > 0:
+        storage_capacity = float(storeable_amount)
 
 func _show_path_line_to(pos: Vector2) -> void:
     if path_line:
@@ -51,12 +63,19 @@ func _apply_separation_force(delta: float) -> void:
     if push.length() > 0.0:
         position += push.normalized() * move_speed * delta
 
-func move_to(pos: Vector2) -> void:
-    manual_destination = pos
+var manual_target: Node2D = null
+
+func move_to(pos) -> void:
     manual_destination_active = true
+    manual_target = null
+    if pos is Node2D:
+        manual_target = pos
+        manual_destination = pos.global_position
+    else:
+        manual_destination = pos
     if path_line:
         path_line.start_pos = global_position
-        path_line.end_pos = pos
+        path_line.end_pos = manual_destination
         path_line.visible = true
 
 func _process(delta: float) -> void:
@@ -81,14 +100,21 @@ func _process(delta: float) -> void:
 func _handle_manual_move(delta: float) -> bool:
     if not manual_destination_active:
         return false
+    if manual_target and is_instance_valid(manual_target):
+        manual_destination = manual_target.global_position
     var dist := position.distance_to(manual_destination)
-    if dist > 5.0:
+    if dist > separation_distance * 1.5:
         var dir := (manual_destination - position).normalized()
         position += dir * move_speed * delta
         if path_line:
             path_line.start_pos = global_position
     else:
         manual_destination_active = false
+        if manual_target and is_instance_valid(manual_target) and manual_target != self:
+            if manual_target.has_method("store_drone"):
+                if manual_target.store_drone(self):
+                    _hide_path_line()
+                    return true
         if path_line:
             path_line.visible = false
     return true
@@ -264,29 +290,33 @@ func _create_cluster() -> Node2D:
 
 ## Store another drone inside this drone if there is capacity.
 func store_drone(drone: Node2D) -> bool:
-    if storeable_amount <= 0:
-        return false
-    if stored_drones.size() >= storeable_amount:
+    if storage_capacity <= 0.0:
         return false
     if not drone:
+        return false
+    var space: float = 1.0
+    if "cargo_space" in drone:
+        space = float(drone.cargo_space)
+    if current_storage + space > storage_capacity:
         return false
     var path := ""
     if drone.has_meta("scene_path"):
         path = str(drone.get_meta("scene_path"))
-    else:
-        if drone.scene_file_path != "":
-            path = drone.scene_file_path
-    stored_drones.append(path)
+    elif drone.scene_file_path != "":
+        path = drone.scene_file_path
+    stored_drones.append({"path": path, "space": space})
+    current_storage += space
     drone.queue_free()
     return true
 
 ## Unload all stored drones at this drone's position.
 func unload_drones() -> void:
-    if storeable_amount <= 0:
+    if storage_capacity <= 0.0:
         return
     if stored_drones.is_empty():
         return
-    for path in stored_drones:
+    for info in stored_drones:
+        var path = info.get("path", "")
         var scene := load(path)
         if scene == null:
             continue
@@ -300,3 +330,4 @@ func unload_drones() -> void:
         if "cluster_scene" in d:
             d.cluster_scene = cluster_scene
     stored_drones.clear()
+    current_storage = 0.0
