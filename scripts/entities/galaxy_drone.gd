@@ -11,6 +11,7 @@ var path_line: Node2D
 
 func _ready() -> void:
     add_to_group("galaxy_drone")
+    add_to_group("drone")
     target_position = position
     path_line = preload("res://scripts/utils/path_line.gd").new()
     path_line.set_as_top_level(true)

@@ -148,7 +148,9 @@ func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
         var count := 0
         if drone_manager:
-            count = drone_manager.get_drones().size()
+            for d in drone_manager.get_drones():
+                if "storeable_amount" in d and d.storeable_amount > 0:
+                    count += 1
         Globals.returning_drone_count = count
         var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
         star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
@@ -182,7 +184,9 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_back_button_pressed() -> void:
     var count := 0
     if drone_manager:
-        count = drone_manager.get_drones().size()
+        for d in drone_manager.get_drones():
+            if "storeable_amount" in d and d.storeable_amount > 0:
+                count += 1
     Globals.returning_drone_count = count
     var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
     star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
