@@ -1,6 +1,7 @@
 extends Node2D
 
 const GalaxyGenerator = preload("res://scripts/generators/galaxy_generator.gd")
+const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 
 ## Scene instantiated for each generated star.
 @export var scene_to_instance: PackedScene
@@ -24,6 +25,10 @@ const GalaxyGenerator = preload("res://scripts/generators/galaxy_generator.gd")
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: GalaxyGenerator = GalaxyGenerator.new()
 var drone: Node2D
+var selected_drones: Array = []
+var selecting: bool = false
+var select_start: Vector2
+var select_rect: Rect2 = Rect2()
 
 func _get_star_by_seed(seed_to_find: int) -> Node2D:
     for star in get_children():
@@ -41,6 +46,12 @@ func _ready() -> void:
         Globals.first_load = false
     else:
         _spawn_all_drones()
+
+func _process(_delta: float) -> void:
+    if selecting:
+        var current := get_global_mouse_position()
+        select_rect = Rect2(select_start, current - select_start)
+        queue_redraw()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.
@@ -102,6 +113,12 @@ func _spawn_all_drones() -> void:
             if "belongs_to_star_seed" in d:
                 d.belongs_to_star_seed = int(seed)
 
+func _draw() -> void:
+    if selecting:
+        var rect := Rect2(to_local(select_start), select_rect.size)
+        draw_rect(rect, Color(0.4, 0.6, 1.0, 0.15), true)
+        draw_rect(rect, Color(0.4, 0.6, 1.0, 0.8), false, 1.0)
+
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()
     if current_scene == null:
@@ -140,3 +157,24 @@ func _open_star_system(seed_to_open: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('toggle_star_system'):
         _open_last_star_system()
+    elif event is InputEventMouseButton:
+        if event.button_index == MOUSE_BUTTON_LEFT:
+            if event.pressed:
+                select_start = get_global_mouse_position()
+                selecting = true
+                select_rect = Rect2(select_start, Vector2.ZERO)
+                queue_redraw()
+            else:
+                selecting = false
+                var rect := Rect2(select_start, get_global_mouse_position() - select_start)
+                rect = rect.abs()
+                SelectionUtils.apply_selection(self, rect, selected_drones)
+                select_rect = Rect2()
+                queue_redraw()
+        elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+            var target := get_global_mouse_position()
+            if selected_drones.is_empty():
+                return
+            for d in selected_drones:
+                if d.has_method("move_to"):
+                    d.move_to(target)
