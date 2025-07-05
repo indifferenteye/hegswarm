@@ -9,7 +9,8 @@ static func set_selected(d: Node2D, selected: bool) -> void:
 
 static func clear_selection(selected_drones: Array) -> void:
     for d in selected_drones:
-        set_selected(d, false)
+        if is_instance_valid(d):
+            set_selected(d, false)
     selected_drones.clear()
 
 static func apply_selection(owner: Node, rect: Rect2, selected_drones: Array) -> void:
