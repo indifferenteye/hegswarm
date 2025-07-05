@@ -6,8 +6,9 @@ extends Node2D
 @export_range(0.0, 1.0) var plants: float = 0.5
 
 func _ready() -> void:
-    var mat = $Sprite2D.material
-    if mat != null:
+    if $Sprite2D.material:
+        $Sprite2D.material = $Sprite2D.material.duplicate()
+        var mat = $Sprite2D.material
         mat.set_shader_parameter("seed", float(seed))
         mat.set_shader_parameter("water", water)
         mat.set_shader_parameter("plants", plants)
