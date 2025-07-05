@@ -64,6 +64,7 @@ func _ready() -> void:
     drone_manager.drone_scene = drone_scene
     drone_manager.drone_speed = drone_speed
     drone_manager.setup(rng.seed, planets)
+    _record_star_system_drones()
 
 func _process(_delta: float) -> void:
     if selecting:
@@ -183,8 +184,7 @@ func _unhandled_input(event: InputEvent) -> void:
         var count := 0
         if drone_manager:
             for d in drone_manager.get_drones():
-                if "storeable_amount" in d and d.storeable_amount > 0:
-                    count += 1
+                count += 1
         Globals.returning_drone_count = count
         var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
         star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
@@ -215,6 +215,17 @@ func _unhandled_input(event: InputEvent) -> void:
                     if d.has_method("move_to"):
                         d.move_to(target)
 
+                        
+func _record_star_system_drones() -> void:
+    if drone_manager == null:
+        return
+    var count := 0
+    for d in drone_manager.get_drones():
+        count += 1
+    var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
+    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
+    Globals.star_drone_counts[Globals.star_seed] = star_counts
+
 func _on_back_button_pressed() -> void:
     var count := 0
     if drone_manager:
@@ -222,7 +233,4 @@ func _on_back_button_pressed() -> void:
             if "storeable_amount" in d and d.storeable_amount > 0:
                 count += 1
     Globals.returning_drone_count = count
-    var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
-    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
-    Globals.star_drone_counts[Globals.star_seed] = star_counts
     get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
