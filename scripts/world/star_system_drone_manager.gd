@@ -80,15 +80,27 @@ func _spawn_drones() -> void:
         Globals.entering_drone_count = 0
         return
 
+    var info_list: Array = Globals.star_carrier_info.get(Globals.star_seed, [])
     var count := Globals.entering_drone_count
+    if count <= 0:
+        count = info_list.size()
     if count <= 0:
         return
 
     for i in range(count):
-        var d: Node2D = drone_scene.instantiate()
+        var path := drone_scene.resource_path
+        if i < info_list.size():
+            path = info_list[i].get("scene_path", path)
+        var scene := load(path)
+        if scene == null:
+            scene = drone_scene
+            path = drone_scene.resource_path
+        var d: Node2D = scene.instantiate()
         add_child(d)
         d.add_to_group("drone")
-        d.set_meta("scene_path", drone_scene.resource_path)
+        d.set_meta("scene_path", path)
+        if "scene_path" in d:
+            d.scene_path = path
         var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
         d.position = planet.position + Vector2(20, 0).rotated(rng.randf() * TAU)
         drones.append(d)
@@ -99,3 +111,4 @@ func _spawn_drones() -> void:
         add_child(line)
         path_lines.append(line)
     Globals.entering_drone_count = 0
+    Globals.star_carrier_info[Globals.star_seed] = []

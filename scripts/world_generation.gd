@@ -71,17 +71,28 @@ func _highlight_last_visited() -> void:
 
 func _record_galaxy_drone_counts() -> void:
     var counts: Dictionary = {}
+    var carrier_info: Dictionary = {}
     for d in get_tree().get_nodes_in_group("galaxy_drone"):
         if not ("belongs_to_star_seed" in d):
             continue
         var seed = d.belongs_to_star_seed
         if not counts.has(seed):
             counts[seed] = {}
+            carrier_info[seed] = []
         var type_counts: Dictionary = counts[seed]
         var t := Globals.GALAXY_DRONE_SCENE_PATH
         type_counts[t] = type_counts.get(t, 0) + 1
         counts[seed] = type_counts
+        var path := ""
+        if d.has_meta("scene_path"):
+            path = str(d.get_meta("scene_path"))
+        elif "scene_path" in d:
+            path = d.scene_path
+        elif d.scene_file_path != "":
+            path = d.scene_file_path
+        carrier_info[seed].append({"scene_path": path})
     Globals.star_drone_counts = counts
+    Globals.star_carrier_info = carrier_info
 
 func _spawn_all_drones() -> void:
     if drone_scene == null:
@@ -92,6 +103,7 @@ func _spawn_all_drones() -> void:
         if star == null:
             continue
         var type_counts: Dictionary = Globals.star_drone_counts[seed]
+        var info_list: Array = Globals.star_carrier_info.get(seed, [])
         var count : int = type_counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
         for i in range(count):
             var d: Node2D = drone_scene.instantiate()
@@ -101,6 +113,12 @@ func _spawn_all_drones() -> void:
             d.set("target_position", d.position)
             if "belongs_to_star_seed" in d:
                 d.belongs_to_star_seed = int(seed)
+            var path := drone_scene.resource_path
+            if i < info_list.size():
+                path = info_list[i].get("scene_path", path)
+            d.set_meta("scene_path", path)
+            if "scene_path" in d:
+                d.scene_path = path
 
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()

@@ -5,6 +5,8 @@ extends Node2D
 
 ## Seed of the star this drone currently belongs to.
 @export var belongs_to_star_seed: int = 0
+## Path to the scene that this drone represents when returning to a star system.
+@export var scene_path: String = ""
 
 var target_position: Vector2
 var path_line: Node2D

@@ -150,6 +150,19 @@ func _connect_asteroids() -> void:
         if asteroid.has_signal("clicked"):
             asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked").bind(asteroid))
 
+func _record_star_system_drones() -> void:
+    var info: Array = []
+    if drone_manager:
+        for d in drone_manager.get_drones():
+            if "storeable_amount" in d and d.storeable_amount > 0:
+                var path := ""
+                if d.has_meta("scene_path"):
+                    path = str(d.get_meta("scene_path"))
+                elif d.scene_file_path != "":
+                    path = d.scene_file_path
+                info.append({"scene_path": path})
+    Globals.star_carrier_info[Globals.star_seed] = info
+
 
 func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
     Globals.space_origin = click_pos
@@ -180,6 +193,7 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
+        _record_star_system_drones()
         var count := 0
         if drone_manager:
             for d in drone_manager.get_drones():
@@ -216,6 +230,7 @@ func _unhandled_input(event: InputEvent) -> void:
                         d.move_to(target)
 
 func _on_back_button_pressed() -> void:
+    _record_star_system_drones()
     var count := 0
     if drone_manager:
         for d in drone_manager.get_drones():
