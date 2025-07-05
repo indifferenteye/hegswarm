@@ -41,7 +41,6 @@ func _ready() -> void:
         Globals.first_load = false
     else:
         _spawn_all_drones()
-    _record_galaxy_drone_counts()
 
 ## Generates a simple spiral galaxy. Adjust exported variables to tweak the
 ## resulting shape.

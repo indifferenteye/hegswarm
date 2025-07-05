@@ -46,7 +46,6 @@ func _ready() -> void:
         Globals.first_load = false
     else:
         _spawn_all_drones()
-    _record_galaxy_drone_counts()
 
 func _process(_delta: float) -> void:
     if selecting:

@@ -55,6 +55,7 @@ func _ready() -> void:
     drone_manager.drone_scene = drone_scene
     drone_manager.drone_speed = drone_speed
     drone_manager.setup(rng.seed, planets)
+    _record_star_system_drones()
 
 func _process(_delta: float) -> void:
     if selecting:
@@ -115,6 +116,17 @@ func _connect_asteroids() -> void:
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
         if asteroid.has_signal("clicked"):
             asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked").bind(asteroid))
+
+func _record_star_system_drones() -> void:
+    if drone_manager == null:
+        return
+    var count := 0
+    for d in drone_manager.get_drones():
+        if "storeable_amount" in d and d.storeable_amount > 0:
+            count += 1
+    var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
+    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
+    Globals.star_drone_counts[Globals.star_seed] = star_counts
 
 
 func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
