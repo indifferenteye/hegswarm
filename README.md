@@ -26,3 +26,11 @@ This repository targets **Godot version 4**. Contributors should use GDScript 2.
 - `scripts/world` - World management and generation scripts.
 - `scripts/utils` - Reusable helper scripts.
 - `scripts/generators` - Procedural generation helpers.
+
+## Offline Mining
+
+Asteroid belts continue being mined even when their scene is not loaded. The
+progress is calculated exponentially using `scripts/utils/belt_offline_progress.gd`.
+Mining therefore slows down as fewer resources remain, preventing the belt from
+being completely emptied while away. The rate of this background mining can be
+tuned via the `offline_progress_factor` property in that script.

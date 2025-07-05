@@ -20,11 +20,18 @@ func apply(key: String) -> int:
     return available
 
 func _calculate_mined_total(counts: Dictionary, last_time: int, now: int, key: String) -> float:
-    var mined_total := 0.0
     if counts.is_empty():
-        return mined_total
+        return 0.0
+
+    var dt: float = float(now - last_time)
     var total_asteroids = Globals.belt_asteroid_count.get(key, 1)
     var total_integrity = Globals.belt_total_integrity.get(key, float(total_asteroids))
+    var percent = Globals.belt_mining_percent.get(key, 0.0)
+
+    # Calculate an aggregated mining rate scaled by the offline_progress_factor.
+    # This value is used as the exponential growth rate so that mining slows as
+    # the belt approaches depletion.
+    var rate_accum := 0.0
     for scene_path in counts.keys():
         var scene := load(scene_path)
         if scene == null:
@@ -37,11 +44,15 @@ func _calculate_mined_total(counts: Dictionary, last_time: int, now: int, key: S
         if "move_speed" in inst:
             speed = inst.move_speed
         inst.free()
-        mined_total += float(counts[scene_path]) * rate * float(now - last_time) * offline_progress_factor / (total_integrity / speed)
-    var percent = Globals.belt_mining_percent.get(key, 0.0)
-    percent += mined_total / float(total_integrity)
-    Globals.belt_mining_percent[key] = clamp(percent, 0.0, 1.0)
-    return mined_total
+        rate_accum += float(counts[scene_path]) * rate * offline_progress_factor / (total_integrity / speed)
+
+    # Apply exponential progress so that mining gradually slows the closer the
+    # belt gets to 100% mined.
+    var new_percent = 1.0 - (1.0 - percent) * exp(-rate_accum * dt * 0.00001)
+    new_percent = clamp(new_percent, 0.0, 1.0)
+    Globals.belt_mining_percent[key] = new_percent
+
+    return (new_percent - percent) * float(total_integrity)
 
 func _apply_blueprints(counts: Dictionary, mined_total: float, last_time: int, now: int, key: String) -> int:
     var mined_materials := int(mined_total)
