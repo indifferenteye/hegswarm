@@ -120,13 +120,17 @@ func _connect_asteroids() -> void:
 func _record_star_system_drones() -> void:
     if drone_manager == null:
         return
-    var count := 0
+    var carriers: Array = []
     for d in drone_manager.get_drones():
         if "storeable_amount" in d and d.storeable_amount > 0:
-            count += 1
+            carriers.append({
+                "storeable_amount": d.storeable_amount,
+                "stored_drones": d.stored_drones.duplicate()
+            })
     var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
-    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
+    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = carriers.size()
     Globals.star_drone_counts[Globals.star_seed] = star_counts
+    Globals.star_carrier_info[Globals.star_seed] = carriers
 
 
 func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
@@ -158,15 +162,9 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed('return_to_galaxy') or event.is_action_pressed('toggle_star_system'):
-        var count := 0
-        if drone_manager:
-            for d in drone_manager.get_drones():
-                if "storeable_amount" in d and d.storeable_amount > 0:
-                    count += 1
-        Globals.returning_drone_count = count
-        var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
-        star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
-        Globals.star_drone_counts[Globals.star_seed] = star_counts
+        _record_star_system_drones()
+        var carriers: Array = Globals.star_carrier_info.get(Globals.star_seed, [])
+        Globals.returning_drone_count = carriers.size()
         get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
     elif event is InputEventMouseButton:
         if event.button_index == MOUSE_BUTTON_LEFT:
@@ -194,13 +192,7 @@ func _unhandled_input(event: InputEvent) -> void:
                         d.move_to(target)
 
 func _on_back_button_pressed() -> void:
-    var count := 0
-    if drone_manager:
-        for d in drone_manager.get_drones():
-            if "storeable_amount" in d and d.storeable_amount > 0:
-                count += 1
-    Globals.returning_drone_count = count
-    var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
-    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
-    Globals.star_drone_counts[Globals.star_seed] = star_counts
+    _record_star_system_drones()
+    var carriers: Array = Globals.star_carrier_info.get(Globals.star_seed, [])
+    Globals.returning_drone_count = carriers.size()
     get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)

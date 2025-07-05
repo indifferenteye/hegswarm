@@ -15,16 +15,23 @@ var _is_last_visited: bool = false
 ## scene changes to the star system view.
 func _update_star_counts() -> void:
     var counts: Dictionary = {}
+    var info: Dictionary = {}
     for d in get_tree().get_nodes_in_group("galaxy_drone"):
         if "belongs_to_star_seed" in d:
             var s = d.belongs_to_star_seed
             if not counts.has(s):
                 counts[s] = {}
+                info[s] = []
             var t_counts: Dictionary = counts[s]
             var t := Globals.GALAXY_DRONE_SCENE_PATH
             t_counts[t] = t_counts.get(t, 0) + 1
             counts[s] = t_counts
+            info[s].append({
+                "storeable_amount": (d.storeable_amount if "storeable_amount" in d else 0),
+                "stored_drones": (d.stored_drones.duplicate() if "stored_drones" in d else [])
+            })
     Globals.star_drone_counts = counts
+    Globals.star_carrier_info = info
 
 func _on_star_clicked(event: InputEvent) -> void:
     _update_star_counts()

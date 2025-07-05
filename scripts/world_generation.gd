@@ -71,17 +71,24 @@ func _highlight_last_visited() -> void:
 
 func _record_galaxy_drone_counts() -> void:
     var counts: Dictionary = {}
+    var info: Dictionary = {}
     for d in get_tree().get_nodes_in_group("galaxy_drone"):
         if not ("belongs_to_star_seed" in d):
             continue
         var seed = d.belongs_to_star_seed
         if not counts.has(seed):
             counts[seed] = {}
+            info[seed] = []
         var type_counts: Dictionary = counts[seed]
         var t := Globals.GALAXY_DRONE_SCENE_PATH
         type_counts[t] = type_counts.get(t, 0) + 1
         counts[seed] = type_counts
+        info[seed].append({
+            "storeable_amount": (d.storeable_amount if "storeable_amount" in d else 0),
+            "stored_drones": (d.stored_drones.duplicate() if "stored_drones" in d else [])
+        })
     Globals.star_drone_counts = counts
+    Globals.star_carrier_info = info
 
 func _spawn_all_drones() -> void:
     if drone_scene == null:
@@ -93,6 +100,7 @@ func _spawn_all_drones() -> void:
             continue
         var type_counts: Dictionary = Globals.star_drone_counts[seed]
         var count : int = type_counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
+        var details: Array = Globals.star_carrier_info.get(seed, [])
         for i in range(count):
             var d: Node2D = drone_scene.instantiate()
             add_child(d)
@@ -101,6 +109,12 @@ func _spawn_all_drones() -> void:
             d.set("target_position", d.position)
             if "belongs_to_star_seed" in d:
                 d.belongs_to_star_seed = int(seed)
+            if i < details.size():
+                var info = details[i]
+                if "storeable_amount" in d:
+                    d.storeable_amount = info.get("storeable_amount", 0)
+                if "stored_drones" in d:
+                    d.stored_drones = info.get("stored_drones", []).duplicate()
 
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()

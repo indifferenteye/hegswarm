@@ -6,6 +6,11 @@ extends Node2D
 ## Seed of the star this drone currently belongs to.
 @export var belongs_to_star_seed: int = 0
 
+## Maximum number of drones this carrier can store.
+@export var storeable_amount: int = 0
+## Information about drones stored inside this carrier.
+var stored_drones: Array = []
+
 var target_position: Vector2
 var path_line: Node2D
 

@@ -9,6 +9,7 @@ scale = Vector2(8, 7.88)
 script = ExtResource("1")
 move_speed = 320.0
 enter_distance = 10.0
+storeable_amount = 0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1.96826, -0.642853)

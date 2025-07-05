@@ -62,13 +62,22 @@ func _spawn_drones() -> void:
 
     path_lines.clear()
 
+    var details: Array = Globals.star_carrier_info.get(Globals.star_seed, [])
+
     if Globals.system_drone_positions.size() > 0:
-        for pos in Globals.system_drone_positions:
+        for i in range(Globals.system_drone_positions.size()):
+            var pos = Globals.system_drone_positions[i]
             var d: Node2D = drone_scene.instantiate()
             add_child(d)
             d.add_to_group("drone")
             d.set_meta("scene_path", drone_scene.resource_path)
             d.position = pos
+            if i < details.size():
+                var info = details[i]
+                if "storeable_amount" in d:
+                    d.storeable_amount = info.get("storeable_amount", 0)
+                if "stored_drones" in d:
+                    d.stored_drones = info.get("stored_drones", []).duplicate()
             drones.append(d)
             drone_targets.append(d.position)
             var line: Node2D = PathLine.new()
@@ -81,8 +90,11 @@ func _spawn_drones() -> void:
         return
 
     var count := Globals.entering_drone_count
-    if count <= 0:
+    if count <= 0 and details.size() == 0:
         return
+
+    if details.size() > 0:
+        count = details.size()
 
     for i in range(count):
         var d: Node2D = drone_scene.instantiate()
@@ -91,6 +103,12 @@ func _spawn_drones() -> void:
         d.set_meta("scene_path", drone_scene.resource_path)
         var planet: Node2D = planets[rng.randi_range(0, planets.size() - 1)]
         d.position = planet.position + Vector2(20, 0).rotated(rng.randf() * TAU)
+        if i < details.size():
+            var info2 = details[i]
+            if "storeable_amount" in d:
+                d.storeable_amount = info2.get("storeable_amount", 0)
+            if "stored_drones" in d:
+                d.stored_drones = info2.get("stored_drones", []).duplicate()
         drones.append(d)
         drone_targets.append(d.position)
         var line: Node2D = PathLine.new()

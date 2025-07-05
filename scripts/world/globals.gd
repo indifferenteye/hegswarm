@@ -16,6 +16,9 @@ const GALAXY_DRONE_SCENE_PATH := "res://assets/drones/galaxy_drone.tscn"
 var entering_drone_count: int = 0
 ## Mapping from star seeds to dictionaries storing drone type counts.
 var star_drone_counts: Dictionary = {}
+## Mapping from star seeds to arrays describing carrier drones in that system.
+## Each entry is a Dictionary containing `storeable_amount` and `stored_drones`.
+var star_carrier_info: Dictionary = {}
 ## Positions of asteroids passed to the space scene.
 var space_asteroid_positions: Array = []
 ## Seeds of asteroids passed to the space scene.
