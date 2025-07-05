@@ -9,6 +9,8 @@ const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 @export var sun_scene: PackedScene = preload('res://assets/celestials/sun.tscn')
 ## Scene used for planets orbiting the star.
 @export var planet_scene: PackedScene = preload('res://assets/celestials/planet.tscn')
+## Scene used for moons orbiting planets.
+@export var moon_scene: PackedScene = preload('res://assets/celestials/planet.tscn')
 ## Scene used for asteroid belts that may appear instead of planets.
 @export var asteroid_belt_scene: PackedScene = preload('res://assets/celestials/asteroid_belt.tscn')
 ## Chance that an orbit will contain an asteroid belt instead of a planet.
@@ -21,11 +23,18 @@ const SelectionUtils = preload("res://scripts/utils/selection_utils.gd")
 @export var max_planets: int = 5
 ## Spacing between each planet's orbit.
 @export var orbit_step: float = 80.0
+## Minimum number of moons per planet.
+@export var min_moons: int = 0
+## Maximum number of moons per planet.
+@export var max_moons: int = 3
+## Spacing between each moon's orbit.
+@export var moon_orbit_step: float = 40.0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var generator: StarSystemGenerator = StarSystemGenerator.new()
 var planets: Array = []
 var orbit_radii: Array = []
+var moon_orbits: Array = []
 var sun: Node2D
 var drone_manager: StarSystemDroneManager
 
@@ -68,6 +77,7 @@ func _spawn_planets(sun: Node2D) -> void:
         push_warning('planet_scene is not set')
         return
     orbit_radii.clear()
+    moon_orbits.clear()
     var offsets := generator.generate_planet_offsets(min_planets, max_planets, orbit_step, rng, 1.5)
     for offset in offsets:
         var is_belt := asteroid_belt_scene != null and rng.randf() < asteroid_belt_chance
@@ -91,7 +101,29 @@ func _spawn_planets(sun: Node2D) -> void:
                 Globals.belt_asteroid_count[key] = body.asteroid_count
         add_child(body)
         planets.append(body)
+        if not is_belt:
+            _spawn_moons(body)
     queue_redraw()
+
+func _spawn_moons(planet: Node2D) -> void:
+    if moon_scene == null:
+        return
+    var count := rng.randi_range(min_moons, max_moons)
+    for i in range(count):
+        var moon: Node2D = moon_scene.instantiate()
+        var radius := moon_orbit_step * (i + 1) + rng.randf_range(-moon_orbit_step * 0.25, moon_orbit_step * 0.25)
+        var angle := rng.randf_range(0.0, TAU)
+        moon.position = planet.position + Vector2(cos(angle), sin(angle)) * radius
+        moon.scale *= rng.randf_range(0.3, 0.7)
+        if "seed" in moon:
+            moon.seed = rng.randi()
+        if "water" in moon:
+            moon.water = rng.randf()
+        if "plants" in moon:
+            moon.plants = rng.randf()
+        add_child(moon)
+        planets.append(moon)
+        moon_orbits.append({"center": planet.position, "radius": radius})
 
 
 func _draw() -> void:
@@ -99,6 +131,8 @@ func _draw() -> void:
         return
     for radius in orbit_radii:
         draw_arc(sun.position, radius, 0.0, TAU, 64, orbit_color, orbit_width)
+    for m in moon_orbits:
+        draw_arc(m["center"], m["radius"], 0.0, TAU, 32, orbit_color, orbit_width)
     if selecting:
         var rect := Rect2(to_local(select_start), select_rect.size)
         draw_rect(rect, Color(0.4, 0.6, 1.0, 0.15), true)

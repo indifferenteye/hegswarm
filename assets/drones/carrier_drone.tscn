@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://bolu5s7f2a1t5"]
 
-[ext_resource type="Script" path="res://scripts/entities/space_drone.gd" id="1"]
+[ext_resource type="Script" uid="uid://cdxla0n8e4wb7" path="res://scripts/entities/space_drone.gd" id="1"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_planet"]
 
@@ -14,7 +14,6 @@ mining_rate = 2225.0
 separation_distance = 100.0
 storeable_amount = 5
 storage_capacity = 5.0
-cargo_space = 1.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1.96826, -0.642853)
