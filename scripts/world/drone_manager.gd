@@ -1,7 +1,5 @@
 extends Node
 
-class_name DroneManager
-
 ##
 ## Maintains drone counts and positions between scenes.
 ## Scenes should call the record_* functions when exiting and the
