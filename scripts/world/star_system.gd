@@ -197,7 +197,8 @@ func _unhandled_input(event: InputEvent) -> void:
         var count := 0
         if drone_manager:
             for d in drone_manager.get_drones():
-                count += 1
+                if "storage_capacity" in d and d.storage_capacity > 0.0:
+                    count += 1
         Globals.returning_drone_count = count
         DroneManager.record_star_drones(drone_manager)
         get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
@@ -238,7 +239,7 @@ func _on_back_button_pressed() -> void:
     var count := 0
     if drone_manager:
         for d in drone_manager.get_drones():
-            if "storeable_amount" in d and d.storeable_amount > 0:
+            if "storage_capacity" in d and d.storage_capacity > 0.0:
                 count += 1
     Globals.returning_drone_count = count
     DroneManager.record_star_drones(drone_manager)

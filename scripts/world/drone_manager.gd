@@ -18,7 +18,8 @@ func record_space_drones(space_node: Node2D) -> void:
     BeltManager.record_belt_state(space_node, space_node.drone_scene)
     var positions: Array = []
     for d in space_node.get_tree().get_nodes_in_group("drone"):
-        positions.append(Globals.space_origin + d.position / 10)
+        if "storage_capacity" in d and d.storage_capacity > 0.0:
+            positions.append(Globals.space_origin + d.position / 10)
     system_drone_positions = positions
 
 func spawn_space_drones(space_node: Node2D) -> void:
@@ -59,7 +60,8 @@ func record_star_drones(source: Node) -> void:
     if source.has_method("get_drones"):
         var count := 0
         for d in source.get_drones():
-            count += 1
+            if "storage_capacity" in d and d.storage_capacity > 0.0:
+                count += 1
         var star_counts: Dictionary = star_drone_counts.get(Globals.star_seed, {})
         star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
         star_drone_counts[Globals.star_seed] = star_counts
