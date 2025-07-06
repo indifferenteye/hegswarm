@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Globals="*res://scripts/world/globals.gd"
+DroneManager="*res://scripts/world/drone_manager.gd"
 
 [input]
 

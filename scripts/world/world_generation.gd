@@ -84,34 +84,23 @@ func _highlight_last_visited() -> void:
         star.mark_as_last_visited()
 
 ## Records how many drones are currently present in each star.
-## Populates `Globals.star_drone_counts` with a mapping from star seed to a
+## Populates `DroneManager.star_drone_counts` with a mapping from star seed to a
 ## dictionary of drone scene paths and counts.
 func _record_galaxy_drone_counts() -> void:
-    var counts: Dictionary = {}
-    for d in get_tree().get_nodes_in_group("galaxy_drone"):
-        if not ("belongs_to_star_seed" in d):
-            continue
-        var seed = d.belongs_to_star_seed
-        if not counts.has(seed):
-            counts[seed] = {}
-        var type_counts: Dictionary = counts[seed]
-        var t := Globals.GALAXY_DRONE_SCENE_PATH
-        type_counts[t] = type_counts.get(t, 0) + 1
-        counts[seed] = type_counts
-    Globals.star_drone_counts = counts
+    DroneManager.record_star_drones(self)
 
-## Spawns galaxy drones around each star based on `Globals.star_drone_counts`.
+## Spawns galaxy drones around each star based on `DroneManager.star_drone_counts`.
 ## Drones are instantiated from `drone_scene` and given their stored
 ## `belongs_to_star_seed` metadata.
 func _spawn_all_drones() -> void:
     if drone_scene == null:
         return
 
-    for seed in Globals.star_drone_counts.keys():
+    for seed in DroneManager.star_drone_counts.keys():
         var star := _get_star_by_seed(int(seed))
         if star == null:
             continue
-        var type_counts: Dictionary = Globals.star_drone_counts[seed]
+        var type_counts: Dictionary = DroneManager.star_drone_counts[seed]
         var count : int = type_counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
         for i in range(count):
             var d: Node2D = drone_scene.instantiate()
@@ -158,7 +147,7 @@ func _open_last_star_system() -> void:
 ## loading the new scene.
 func _open_star_system(seed_to_open: int) -> void:
     _record_galaxy_drone_counts()
-    var counts = Globals.star_drone_counts.get(seed_to_open, {})
+    var counts = DroneManager.star_drone_counts.get(seed_to_open, {})
     Globals.entering_drone_count = counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
     if Globals.first_load and Globals.entering_drone_count == 0:
         Globals.entering_drone_count = 1

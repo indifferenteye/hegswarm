@@ -187,7 +187,7 @@ func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
     for d in drone_manager.get_drones():
         if d.global_position.distance_to(click_pos) <= asteroid_load_radius:
             drone_positions.append(d.global_position - click_pos)
-    Globals.space_drone_positions = drone_positions
+    DroneManager.space_drone_positions = drone_positions
 
     get_tree().change_scene_to_file(Globals.SPACE_SCENE_PATH)
 
@@ -199,9 +199,7 @@ func _unhandled_input(event: InputEvent) -> void:
             for d in drone_manager.get_drones():
                 count += 1
         Globals.returning_drone_count = count
-        var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
-        star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
-        Globals.star_drone_counts[Globals.star_seed] = star_counts
+        DroneManager.record_star_drones(drone_manager)
         get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)
     elif event is InputEventMouseButton:
         if event.button_index == MOUSE_BUTTON_LEFT:
@@ -230,16 +228,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
                         
 ## Saves the current number of drones in this star system to
-## `Globals.star_drone_counts` so they can be respawned later.
+## `DroneManager.star_drone_counts` so they can be respawned later.
 func _record_star_system_drones() -> void:
     if drone_manager == null:
         return
-    var count := 0
-    for d in drone_manager.get_drones():
-        count += 1
-    var star_counts: Dictionary = Globals.star_drone_counts.get(Globals.star_seed, {})
-    star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
-    Globals.star_drone_counts[Globals.star_seed] = star_counts
+    DroneManager.record_star_drones(drone_manager)
 
 func _on_back_button_pressed() -> void:
     var count := 0
@@ -248,4 +241,5 @@ func _on_back_button_pressed() -> void:
             if "storeable_amount" in d and d.storeable_amount > 0:
                 count += 1
     Globals.returning_drone_count = count
+    DroneManager.record_star_drones(drone_manager)
     get_tree().change_scene_to_file(Globals.GALAXY_SCENE_PATH)

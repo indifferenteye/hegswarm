@@ -46,34 +46,7 @@ func _ready() -> void:
     Globals.space_asteroid_positions = []
     Globals.space_asteroid_seeds = []
 
-    var drone_positions := Globals.space_drone_positions
-    var counts: Dictionary = Globals.belt_drones.get(key, {})
-    for scene_path in counts.keys():
-        var scene := load(scene_path)
-        if scene == null:
-            continue
-        for i in range(int(counts[scene_path])):
-            var d: Node2D = scene.instantiate()
-            add_child(d)
-            var pos := Vector2.ZERO
-            if drone_positions.size() > 0:
-                pos = drone_positions.pop_front() * 10
-            d.position = pos
-            d.scale *= 10
-            d.add_to_group("drone")
-            d.set_meta("scene_path", scene_path)
-            if "cluster_scene" in d:
-                d.cluster_scene = material_cluster_scene
-    for pos in drone_positions:
-        var d: Node2D = drone_scene.instantiate()
-        add_child(d)
-        d.position = pos * 10
-        d.scale *= 10
-        d.add_to_group("drone")
-        d.set_meta("scene_path", drone_scene.resource_path)
-        if "cluster_scene" in d:
-            d.cluster_scene = material_cluster_scene
-    Globals.space_drone_positions = []
+    DroneManager.spawn_space_drones(self)
 
 
 func _draw() -> void:
@@ -195,8 +168,4 @@ func _on_asteroid_mined(global_pos: Vector2, asteroid: Node) -> void:
     Globals.belt_mining_percent[key] = clamp(mined, 0.0, 1.0)
 
 func _save_system_drone_positions() -> void:
-    BeltManager.record_belt_state(self, drone_scene)
-    var positions: Array = []
-    for d in get_tree().get_nodes_in_group("drone"):
-        positions.append(Globals.space_origin + d.position / 10)
-    Globals.system_drone_positions = positions
+    DroneManager.record_space_drones(self)
