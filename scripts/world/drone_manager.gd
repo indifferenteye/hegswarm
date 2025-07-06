@@ -7,7 +7,7 @@ extends Node
 ## galaxy, star system and space scenes.
 ##
 
-var system_drone_positions: Array = []
+var system_drone_data: Array = []
 var star_drone_counts: Dictionary = {}
 var space_drone_positions: Array = []
 
@@ -16,10 +16,15 @@ const PathLine = preload("res://scripts/utils/path_line.gd")
 func record_space_drones(space_node: Node2D) -> void:
     var BeltManager = preload("res://scripts/utils/belt_manager.gd")
     BeltManager.record_belt_state(space_node, space_node.drone_scene)
-    var positions: Array = []
+    var data: Array = []
     for d in space_node.get_tree().get_nodes_in_group("drone"):
-        positions.append(Globals.space_origin + d.position / 10)
-    system_drone_positions = positions
+        if "storage_capacity" in d and d.storage_capacity > 0.0:
+            var entry := {
+                "pos": Globals.space_origin + d.position / 10,
+                "storage": float(d.storage_capacity)
+            }
+            data.append(entry)
+    system_drone_data = data
 
 func spawn_space_drones(space_node: Node2D) -> void:
     if space_node.drone_scene == null:
@@ -59,7 +64,13 @@ func record_star_drones(source: Node) -> void:
     if source.has_method("get_drones"):
         var count := 0
         for d in source.get_drones():
-            count += 1
+            var cap := 0.0
+            if "storage_capacity" in d:
+                cap = float(d.storage_capacity)
+            elif d.has_meta("storage_capacity"):
+                cap = float(d.get_meta("storage_capacity"))
+            if cap > 0.0:
+                count += 1
         var star_counts: Dictionary = star_drone_counts.get(Globals.star_seed, {})
         star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
         star_drone_counts[Globals.star_seed] = star_counts
@@ -83,13 +94,14 @@ func spawn_star_drones(manager: Node) -> void:
     if drone_scene == null or planets.is_empty():
         return
     manager.path_lines.clear()
-    if system_drone_positions.size() > 0:
-        for pos in system_drone_positions:
+    if system_drone_data.size() > 0:
+        for info in system_drone_data:
             var d: Node2D = drone_scene.instantiate()
             manager.add_child(d)
             d.add_to_group("drone")
             d.set_meta("scene_path", drone_scene.resource_path)
-            d.position = pos
+            d.set_meta("storage_capacity", info.get("storage", 0.0))
+            d.position = info.get("pos", Vector2.ZERO)
             manager.drones.append(d)
             manager.drone_targets.append(d.position)
             var line: Node2D = PathLine.new()
@@ -97,7 +109,7 @@ func spawn_star_drones(manager: Node) -> void:
             line.visible = false
             manager.add_child(line)
             manager.path_lines.append(line)
-        system_drone_positions = []
+        system_drone_data = []
         Globals.entering_drone_count = 0
         return
     var count := Globals.entering_drone_count
