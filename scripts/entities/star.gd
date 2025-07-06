@@ -34,11 +34,16 @@ func _on_star_clicked(event: InputEvent) -> void:
         Globals.start_star_seed = seed
         get_tree().change_scene_to_file(Globals.STAR_SYSTEM_SCENE_PATH)
     elif event.button_index == MOUSE_BUTTON_RIGHT and drones.size() > 0:
-        var d := drones[0]
-        if d.has_method("move_to"):
-            d.call("move_to", global_position)
-            if "belongs_to_star_seed" in d:
-                d.belongs_to_star_seed = seed
+        var parent := get_parent()
+        if parent != null and parent.has_method("send_selected_drones_to_star"):
+            parent.send_selected_drones_to_star(global_position, seed)
+            _update_star_counts()
+        else:
+            var d := drones[0]
+            if d.has_method("move_to"):
+                d.call("move_to", global_position)
+                if "belongs_to_star_seed" in d:
+                    d.belongs_to_star_seed = seed
 
 func _handle_click_event(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.pressed:

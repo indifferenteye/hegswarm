@@ -111,6 +111,15 @@ func _spawn_all_drones() -> void:
             if "belongs_to_star_seed" in d:
                 d.belongs_to_star_seed = int(seed)
 
+func send_selected_drones_to_star(target: Vector2, star_seed_value: int) -> void:
+    if selected_drones.is_empty():
+        return
+    for d in selected_drones:
+        if d.has_method("move_to"):
+            d.move_to(target)
+        if "belongs_to_star_seed" in d:
+            d.belongs_to_star_seed = star_seed_value
+
 func _draw() -> void:
     if selecting:
         var rect := Rect2(to_local(select_start), select_rect.size)
