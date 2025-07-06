@@ -14,22 +14,16 @@ const GALAXY_SCENE_PATH := "res://scenes/galaxy.tscn"
 const GALAXY_DRONE_SCENE_PATH := "res://assets/drones/galaxy_drone.tscn"
 ## Number of drones that should spawn in the next opened star system.
 var entering_drone_count: int = 0
-## Mapping from star seeds to dictionaries storing drone type counts.
-var star_drone_counts: Dictionary = {}
 ## Positions of asteroids passed to the space scene.
 var space_asteroid_positions: Array = []
 ## Seeds of asteroids passed to the space scene.
 var space_asteroid_seeds: Array = []
-## Relative positions of drones passed to the space scene.
-var space_drone_positions: Array = []
 ## Position where the galaxy drone should reappear when returning from a star system.
 var galaxy_drone_position: Vector2 = Vector2.ZERO
 ## Number of drones that should reappear in the galaxy scene.
 var returning_drone_count: int = 0
 ## Star-system coordinates of the asteroid clicked to open the space scene.
 var space_origin: Vector2 = Vector2.ZERO
-## Absolute positions of drones to restore when returning from the space scene.
-var system_drone_positions: Array = []
 ## Path to the space scene file.
 const SPACE_SCENE_PATH := "res://scenes/space.tscn"
 

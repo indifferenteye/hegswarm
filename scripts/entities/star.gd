@@ -14,22 +14,12 @@ var _is_last_visited: bool = false
 ## Handles mouse input on the star. When the player left-clicks the star, the
 ## scene changes to the star system view.
 func _update_star_counts() -> void:
-    var counts: Dictionary = {}
-    for d in get_tree().get_nodes_in_group("galaxy_drone"):
-        if "belongs_to_star_seed" in d:
-            var s = d.belongs_to_star_seed
-            if not counts.has(s):
-                counts[s] = {}
-            var t_counts: Dictionary = counts[s]
-            var t := Globals.GALAXY_DRONE_SCENE_PATH
-            t_counts[t] = t_counts.get(t, 0) + 1
-            counts[s] = t_counts
-    Globals.star_drone_counts = counts
+    DroneManager.record_star_drones(self)
 
 func _on_star_clicked(event: InputEvent) -> void:
     _update_star_counts()
     var drones := get_tree().get_nodes_in_group("galaxy_drone")
-    var counts  = Globals.star_drone_counts.get(seed, {})
+    var counts  = DroneManager.star_drone_counts.get(seed, {})
     var near_count : int = counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
     var first_near_drone: Node2D = null
     for d in drones:
