@@ -6,7 +6,6 @@ var drone: Node2D
 var move_speed: float
 var detection_range: float
 var mining_range: float
-var cluster_scene: PackedScene
 var path_line: Node2D
 
 var carried_material = null
@@ -14,13 +13,12 @@ var blueprint_target: Node2D = null
 var cluster_target: Node2D = null
 var deliver_to_cluster: bool = false
 
-func _init(d: Node2D, path: Node2D, speed: float, detect: float, range: float, scene: PackedScene) -> void:
+func _init(d: Node2D, path: Node2D, speed: float, detect: float, range: float) -> void:
     drone = d
     path_line = path
     move_speed = speed
     detection_range = detect
     mining_range = range
-    cluster_scene = scene
 
 func show_path_line_to(pos: Vector2) -> void:
     if path_line:
@@ -167,9 +165,10 @@ func get_cluster_with_room() -> Node2D:
     return null
 
 func create_cluster() -> Node2D:
-    if cluster_scene == null:
+    var scene: PackedScene = drone.cluster_scene
+    if scene == null:
         return null
-    var cluster := cluster_scene.instantiate()
+    var cluster := scene.instantiate()
     drone.get_parent().add_child(cluster)
     cluster.position = drone.position
     cluster.scale *= 10

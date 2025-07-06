@@ -36,9 +36,9 @@ func _ready() -> void:
         storage_capacity = float(storeable_amount)
 
     movement = DroneMovement.new(self, path_line, move_speed, separation_distance)
-    cargo = DroneCargo.new(self, path_line, move_speed, detection_range, mining_range, cluster_scene)
+    cargo = DroneCargo.new(self, path_line, move_speed, detection_range, mining_range)
     mining = DroneMining.new(self, path_line, move_speed, mining_range, mining_rate, detection_range)
-    storage = DroneStorage.new(self, storage_capacity, cargo_space, cluster_scene)
+    storage = DroneStorage.new(self, storage_capacity, cargo_space)
 
 func move_to(pos) -> void:
     movement.move_to(pos)

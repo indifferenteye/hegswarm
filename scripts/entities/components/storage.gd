@@ -7,13 +7,11 @@ var storage_capacity: float = 0.0
 var cargo_space: float = 1.0
 var stored_drones: Array = []
 var current_storage: float = 0.0
-var cluster_scene: PackedScene
 
-func _init(d: Node2D, capacity: float, space: float, scene: PackedScene) -> void:
+func _init(d: Node2D, capacity: float, space: float) -> void:
     drone = d
     storage_capacity = capacity
     cargo_space = space
-    cluster_scene = scene
 
 func store_drone(other: Node2D) -> bool:
     if storage_capacity <= 0.0:
@@ -53,6 +51,6 @@ func unload_drones() -> void:
         d.add_to_group("drone")
         d.set_meta("scene_path", path)
         if "cluster_scene" in d:
-            d.cluster_scene = cluster_scene
+            d.cluster_scene = drone.cluster_scene
     stored_drones.clear()
     current_storage = 0.0
