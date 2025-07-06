@@ -78,8 +78,6 @@ func record_star_drones(source: Node) -> void:
     star_drone_counts = counts
 
 func spawn_star_drones(manager: Node) -> void:
-    if not manager.has_method("drone_scene"):
-        return
     var drone_scene = manager.drone_scene
     var planets = manager.planets
     if drone_scene == null or planets.is_empty():
