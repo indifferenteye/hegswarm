@@ -54,8 +54,10 @@ func _process(_delta: float) -> void:
         select_rect = Rect2(select_start, current - select_start)
         queue_redraw()
 
-## Generates a simple spiral galaxy. Adjust exported variables to tweak the
-## resulting shape.
+## Generates the galaxy using the exported parameters.
+## Spawns `star_count` stars in a spiral layout using `radius`, `arm_count`,
+## `twist` and the other generation variables. Any instantiated stars are added
+## as children of this node.
 func _generate_galaxy() -> void:
     if scene_to_instance == null:
         push_warning("scene_to_instance is not set")
@@ -81,6 +83,9 @@ func _highlight_last_visited() -> void:
     if star and star.has_method("mark_as_last_visited"):
         star.mark_as_last_visited()
 
+## Records how many drones are currently present in each star.
+## Populates `Globals.star_drone_counts` with a mapping from star seed to a
+## dictionary of drone scene paths and counts.
 func _record_galaxy_drone_counts() -> void:
     var counts: Dictionary = {}
     for d in get_tree().get_nodes_in_group("galaxy_drone"):
@@ -95,6 +100,9 @@ func _record_galaxy_drone_counts() -> void:
         counts[seed] = type_counts
     Globals.star_drone_counts = counts
 
+## Spawns galaxy drones around each star based on `Globals.star_drone_counts`.
+## Drones are instantiated from `drone_scene` and given their stored
+## `belongs_to_star_seed` metadata.
 func _spawn_all_drones() -> void:
     if drone_scene == null:
         return
@@ -120,6 +128,8 @@ func _draw() -> void:
         draw_rect(rect, Color(0.4, 0.6, 1.0, 0.15), true)
         draw_rect(rect, Color(0.4, 0.6, 1.0, 0.8), false, 1.0)
 
+## Moves the main camera to the star defined by `Globals.star_seed` and resets
+## its zoom level. No action is taken if no suitable camera exists.
 func _center_camera_on_last_visited() -> void:
     var current_scene := get_tree().get_current_scene()
     if current_scene == null:
@@ -143,6 +153,9 @@ func _open_random_star_system() -> void:
 func _open_last_star_system() -> void:
     _open_star_system(Globals.star_seed)
 
+## Switches to the star system scene associated with `seed_to_open`.
+## Updates global drone counts and records the galaxy drone position before
+## loading the new scene.
 func _open_star_system(seed_to_open: int) -> void:
     _record_galaxy_drone_counts()
     var counts = Globals.star_drone_counts.get(seed_to_open, {})

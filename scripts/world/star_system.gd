@@ -73,6 +73,10 @@ func _process(_delta: float) -> void:
         queue_redraw()
 
 
+## Creates planets or asteroid belts in orbits around the provided `sun`.
+## Uses the exported planet and belt parameters to determine placement and
+## stores each created body in the `planets` array. Moons are spawned for
+## planets that are not belts.
 func _spawn_planets(sun: Node2D) -> void:
     if planet_scene == null:
         push_warning('planet_scene is not set')
@@ -106,6 +110,8 @@ func _spawn_planets(sun: Node2D) -> void:
             _spawn_moons(body)
     queue_redraw()
 
+## Creates moons for the given `planet` using `moon_scene`.
+## Chosen orbits are stored in `moon_orbits` so they can be drawn by `_draw`.
 func _spawn_moons(planet: Node2D) -> void:
     if moon_scene == null:
         return
@@ -139,6 +145,8 @@ func _draw() -> void:
         draw_rect(rect, Color(0.4, 0.6, 1.0, 0.15), true)
         draw_rect(rect, Color(0.4, 0.6, 1.0, 0.8), false, 1.0)
 
+## Applies the stored mining percentage to each asteroid belt in the scene.
+## This ensures belts remain partially mined when reloaded.
 func _apply_belt_mining() -> void:
     for belt in get_tree().get_nodes_in_group("asteroid_belt"):
         var key := str(Globals.star_seed) + "_" + str(belt.seed)
@@ -146,12 +154,17 @@ func _apply_belt_mining() -> void:
         if belt.has_method("apply_mining"):
             belt.apply_mining(percent, Globals.star_seed)
 
+## Connects the `clicked` signal on all asteroids so that selecting one opens
+## the space scene.
 func _connect_asteroids() -> void:
     for asteroid in get_tree().get_nodes_in_group("asteroid"):
         if asteroid.has_signal("clicked"):
             asteroid.connect("clicked", Callable(self, "_on_asteroid_clicked").bind(asteroid))
 
 
+## Collects nearby asteroids and drones when one is clicked and switches to the
+## space scene. `click_pos` is the asteroid's world position and `src` is the
+## asteroid node that was clicked.
 func _on_asteroid_clicked(click_pos: Vector2, src: Node) -> void:
     Globals.space_origin = click_pos
     var belt_seed := 0
@@ -216,6 +229,8 @@ func _unhandled_input(event: InputEvent) -> void:
                         d.move_to(target)
 
                         
+## Saves the current number of drones in this star system to
+## `Globals.star_drone_counts` so they can be respawned later.
 func _record_star_system_drones() -> void:
     if drone_manager == null:
         return
