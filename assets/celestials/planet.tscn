@@ -17,6 +17,7 @@ scale = Vector2(10, 10)
 script = ExtResource("1")
 water = 0.21
 plants = 0.823
+grid_size = 20.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_planet")

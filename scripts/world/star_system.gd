@@ -98,6 +98,8 @@ func _spawn_planets(sun: Node2D) -> void:
             body.water = rng.randf()
         if "plants" in body:
             body.plants = rng.randf()
+        if "grid_size" in body:
+            body.grid_size = rng.randf_range(10.0, 30.0)
         if is_belt:
             if "radius" in body:
                 body.radius = offset.length()
@@ -125,9 +127,11 @@ func _spawn_moons(planet: Node2D) -> void:
         if "seed" in moon:
             moon.seed = rng.randi()
         if "water" in moon:
-            moon.water = rng.randf()
+            moon.water = rng.randf_range(0.0, 0.3)
         if "plants" in moon:
-            moon.plants = rng.randf()
+            moon.plants = rng.randf_range(0.0, 0.2)
+        if "grid_size" in moon:
+            moon.grid_size = rng.randf_range(5.0, 15.0)
         add_child(moon)
         planets.append(moon)
         moon_orbits.append({"center": planet.position, "radius": radius})
