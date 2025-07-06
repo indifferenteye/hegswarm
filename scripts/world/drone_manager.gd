@@ -7,7 +7,7 @@ extends Node
 ## galaxy, star system and space scenes.
 ##
 
-var system_drone_positions: Array = []
+var system_drone_data: Array = []
 var star_drone_counts: Dictionary = {}
 var space_drone_positions: Array = []
 
@@ -16,11 +16,15 @@ const PathLine = preload("res://scripts/utils/path_line.gd")
 func record_space_drones(space_node: Node2D) -> void:
     var BeltManager = preload("res://scripts/utils/belt_manager.gd")
     BeltManager.record_belt_state(space_node, space_node.drone_scene)
-    var positions: Array = []
+    var data: Array = []
     for d in space_node.get_tree().get_nodes_in_group("drone"):
         if "storage_capacity" in d and d.storage_capacity > 0.0:
-            positions.append(Globals.space_origin + d.position / 10)
-    system_drone_positions = positions
+            var entry := {
+                "pos": Globals.space_origin + d.position / 10,
+                "path": d.get_meta("scene_path", space_node.drone_scene.resource_path)
+            }
+            data.append(entry)
+    system_drone_data = data
 
 func spawn_space_drones(space_node: Node2D) -> void:
     if space_node.drone_scene == null:
@@ -85,13 +89,17 @@ func spawn_star_drones(manager: Node) -> void:
     if drone_scene == null or planets.is_empty():
         return
     manager.path_lines.clear()
-    if system_drone_positions.size() > 0:
-        for pos in system_drone_positions:
-            var d: Node2D = drone_scene.instantiate()
+    if system_drone_data.size() > 0:
+        for info in system_drone_data:
+            var path := info.get("path", drone_scene.resource_path)
+            var scene := load(path)
+            if scene == null:
+                continue
+            var d: Node2D = scene.instantiate()
             manager.add_child(d)
             d.add_to_group("drone")
-            d.set_meta("scene_path", drone_scene.resource_path)
-            d.position = pos
+            d.set_meta("scene_path", path)
+            d.position = info.get("pos", Vector2.ZERO)
             manager.drones.append(d)
             manager.drone_targets.append(d.position)
             var line: Node2D = PathLine.new()
@@ -99,7 +107,7 @@ func spawn_star_drones(manager: Node) -> void:
             line.visible = false
             manager.add_child(line)
             manager.path_lines.append(line)
-        system_drone_positions = []
+        system_drone_data = []
         Globals.entering_drone_count = 0
         return
     var count := Globals.entering_drone_count
