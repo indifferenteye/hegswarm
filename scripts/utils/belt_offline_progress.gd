@@ -5,6 +5,9 @@ class_name BeltOfflineProgress
 var offline_progress_factor: float = 0.05
 var transport_time_per_material: float = 1.0
 
+## Calculates and applies offline progress for the belt identified by `key`.
+## Returns the amount of mined material available for delivery after
+## processing blueprints and updates various Globals dictionaries.
 func apply(key: String) -> int:
     var last_time = Globals.belt_last_loaded.get(key, 0)
     var now := Time.get_unix_time_from_system()
@@ -19,6 +22,9 @@ func apply(key: String) -> int:
     Globals.belt_last_loaded[key] = now
     return available
 
+## Computes how many asteroids were mined while the belt was unloaded.
+## Updates `Globals.belt_mining_percent` based on the elapsed time and the
+## drones specified in `counts`.
 func _calculate_mined_total(counts: Dictionary, last_time: int, now: int, key: String) -> float:
     if counts.is_empty():
         return 0.0
@@ -54,6 +60,8 @@ func _calculate_mined_total(counts: Dictionary, last_time: int, now: int, key: S
 
     return (new_percent - percent) * float(total_integrity)
 
+## Converts mined resources into drones by completing queued blueprints.
+## Returns the remaining materials that can be delivered to the player.
 func _apply_blueprints(counts: Dictionary, mined_total: float, last_time: int, now: int, key: String) -> int:
     var mined_materials := int(mined_total)
     var cluster_materials = Globals.belt_cluster_iron.get(key, 0)
