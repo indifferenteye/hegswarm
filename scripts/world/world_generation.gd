@@ -149,7 +149,9 @@ func _open_star_system(seed_to_open: int) -> void:
     _record_galaxy_drone_counts()
     var counts = DroneManager.star_drone_counts.get(seed_to_open, {})
     Globals.entering_drone_count = counts.get(Globals.GALAXY_DRONE_SCENE_PATH, 0)
-    if Globals.first_load and Globals.entering_drone_count == 0:
+    if Globals.entering_drone_count == 0 and (
+        Globals.first_load or DroneManager.star_drone_counts.is_empty()
+    ):
         Globals.entering_drone_count = 1
     Globals.star_seed = seed_to_open
     Globals.start_star_seed = seed_to_open
