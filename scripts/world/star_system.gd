@@ -197,7 +197,12 @@ func _unhandled_input(event: InputEvent) -> void:
         var count := 0
         if drone_manager:
             for d in drone_manager.get_drones():
-                if "storage_capacity" in d and d.storage_capacity > 0.0:
+                var cap := 0.0
+                if "storage_capacity" in d:
+                    cap = float(d.storage_capacity)
+                elif d.has_meta("storage_capacity"):
+                    cap = float(d.get_meta("storage_capacity"))
+                if cap > 0.0:
                     count += 1
         Globals.returning_drone_count = count
         DroneManager.record_star_drones(drone_manager)
@@ -239,7 +244,12 @@ func _on_back_button_pressed() -> void:
     var count := 0
     if drone_manager:
         for d in drone_manager.get_drones():
-            if "storage_capacity" in d and d.storage_capacity > 0.0:
+            var cap := 0.0
+            if "storage_capacity" in d:
+                cap = float(d.storage_capacity)
+            elif d.has_meta("storage_capacity"):
+                cap = float(d.get_meta("storage_capacity"))
+            if cap > 0.0:
                 count += 1
     Globals.returning_drone_count = count
     DroneManager.record_star_drones(drone_manager)

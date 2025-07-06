@@ -21,7 +21,7 @@ func record_space_drones(space_node: Node2D) -> void:
         if "storage_capacity" in d and d.storage_capacity > 0.0:
             var entry := {
                 "pos": Globals.space_origin + d.position / 10,
-                "path": d.get_meta("scene_path", space_node.drone_scene.resource_path)
+                "storage": float(d.storage_capacity)
             }
             data.append(entry)
     system_drone_data = data
@@ -64,7 +64,12 @@ func record_star_drones(source: Node) -> void:
     if source.has_method("get_drones"):
         var count := 0
         for d in source.get_drones():
-            if "storage_capacity" in d and d.storage_capacity > 0.0:
+            var cap := 0.0
+            if "storage_capacity" in d:
+                cap = float(d.storage_capacity)
+            elif d.has_meta("storage_capacity"):
+                cap = float(d.get_meta("storage_capacity"))
+            if cap > 0.0:
                 count += 1
         var star_counts: Dictionary = star_drone_counts.get(Globals.star_seed, {})
         star_counts[Globals.GALAXY_DRONE_SCENE_PATH] = count
@@ -91,14 +96,11 @@ func spawn_star_drones(manager: Node) -> void:
     manager.path_lines.clear()
     if system_drone_data.size() > 0:
         for info in system_drone_data:
-            var path := info.get("path", drone_scene.resource_path)
-            var scene := load(path)
-            if scene == null:
-                continue
-            var d: Node2D = scene.instantiate()
+            var d: Node2D = drone_scene.instantiate()
             manager.add_child(d)
             d.add_to_group("drone")
-            d.set_meta("scene_path", path)
+            d.set_meta("scene_path", drone_scene.resource_path)
+            d.set_meta("storage_capacity", info.get("storage", 0.0))
             d.position = info.get("pos", Vector2.ZERO)
             manager.drones.append(d)
             manager.drone_targets.append(d.position)
