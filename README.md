@@ -34,3 +34,7 @@ progress is calculated exponentially using `scripts/utils/belt_offline_progress.
 Mining therefore slows down as fewer resources remain, preventing the belt from
 being completely emptied while away. The rate of this background mining can be
 tuned via the `offline_progress_factor` property in that script.
+
+## Testing
+
+Unit tests live in the `tests/` directory and can be run with `pytest`.
